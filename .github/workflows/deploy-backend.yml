@@ -1,0 +1,66 @@
+# File: .github/workflows/deploy-backend.yml
+
+name: Deploy Express Backend
+
+on:
+  push:
+    branches:
+      - main # Run only when pushing to the main branch
+
+jobs:
+  deploy:
+    name: Deploy Backend to Server
+    runs-on: ubuntu-latest # Use a standard GitHub runner
+
+    # Use the 'production' environment secrets/variables & rules
+    environment:
+      name: production
+      # url: https://api.yourdomain.com # Optional: Your API's live URL
+
+    steps:
+      - name: Connect to Server and Deploy
+        uses: appleboy/ssh-action@master # Action to run commands via SSH
+        with:
+          # === SSH Credentials (from Actions Secrets) ===
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          # === Commands to Run ON YOUR SERVER ===
+          script: |
+            # TODO: Create a directory on the hosting service
+            # Navigate to your project directory (IMPORTANT: CHANGE THIS PATH!)
+            cd/var/www/your-project-name || exit 1
+
+            # Get the latest code from the 'main' branch on GitHub
+            echo "Pulling latest code..."
+            git switch main # Ensure we are on the main branch
+            git pull origin main
+
+            # Install/update dependencies (only production ones)
+            echo "Installing dependencies..."
+            npm ci --omit=dev # Use 'ci' for consistency, omit dev dependencies
+
+            # Create the .env file using secrets from GitHub Environments
+            echo "Creating .env file..."
+            cat << EOF > .env
+            NODE_ENV=${{ vars.NODE_ENV }}
+            SERVER_MONGODB_URI=${{ secrets.SERVER_MONGODB_URI }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            ALLOWED_ORIGIN=${{ vars.CLIENT_API_ENDPOINT }} # For server-side CORS config
+            PORT=3000 # Or whatever port your server uses
+            EOF
+
+            # Build TypeScript to JavaScript (using your build script)
+            echo "Building application..."
+            npm run build
+
+            # Start/Restart the application using PM2
+            # PM2 keeps your app running even if you disconnect or it crashes
+            echo "Starting/Restarting application with PM2..."
+            # Install PM2 globally if it's not already installed (runs only if needed)
+            npm install -g pm2
+            # Start the app using your 'start' script, managed by PM2
+            pm2 start npm --name "pos-express-app" -- run start --update-env || pm2 restart pos-express-app --update-env
+
+            echo "Backend deployment finished!"
