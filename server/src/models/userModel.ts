@@ -1,30 +1,40 @@
 import mongoose from 'mongoose';
 import roles from '../enums/roles.ts';
+import status from '../enums/status.ts';
 
 const userSchema = new mongoose.Schema({
     name: { type: String, rquired: true },
-    email: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    verifiedOtp: { type: String, default: '' },
-    verifiedOtpExpiry: { type: Number, default: 0 },
-    isEmailVerified: { type: Boolean, default: false },
-    OtpExpiry: { type: Number, default: 0 },
     role: { type: mongoose.SchemaTypes.ObjectId, ref: 'Role' },
+    status: {type: mongoose.SchemaTypes.ObjectId, ref: 'Status'}
 });
 
 userSchema.pre('save', async function (next) {
     if (!this.role) {
         try {
             const RoleModel = mongoose.model('Role');
-            const studentRole = await RoleModel.findOne({
+            const cashierRole = await RoleModel.findOne({
                 name: roles.CASHIER,
             });
-            if (studentRole) {
-                this.role = studentRole._id;
+            if (cashierRole) {
+                this.role = cashierRole._id;
             } else {
-                return next(
-                    new Error('Default cashier role not found in the database.')
-                );
+                return next(new Error('Default cashier role not found in the database.'));
+            }
+        } catch (error) {
+            return next(error as mongoose.Error);
+        }
+    }
+    
+    if (!this.status) {
+        try {
+            const StatusModel = mongoose.model('Status');
+            const activeStatus = await StatusModel.findOne({ name: status.ACTIVE });
+            if (activeStatus) {
+                this.status = activeStatus._id;
+            } else {
+                return next(new Error('Default ACTIVE status not found in the database.'));
             }
         } catch (error) {
             return next(error as mongoose.Error);
