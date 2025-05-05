@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: mongoose.SchemaTypes.ObjectId, ref: 'Role' },
-    status: {type: mongoose.SchemaTypes.ObjectId, ref: 'Status'}
+    status: {type: mongoose.SchemaTypes.ObjectId, ref: 'Status'},
+    tokenVersion: { type: Number, default: 0 }
 });
 
 userSchema.pre('save', async function (next) {
