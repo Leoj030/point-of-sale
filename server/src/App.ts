@@ -1,7 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import authRouter from './routes/authRoutes.ts';
-import menuRoutes from './routes/menuRoutes.ts';
+import authRoutes from './routes/auth.routes.ts';
+import inventoryRoutes from './routes/inventory.routes.ts';
 import cors from 'cors';
 import corsOption from './config/corsOption.ts';
 import connectDB from './config/mongodb.ts';
@@ -17,9 +17,9 @@ const app = express();
     await seedRoles();
     await seedStatus();
     await seed();
-
-    app.use(express.json());
 })();
+
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors(corsOption));
@@ -28,7 +28,7 @@ app.use(cors(corsOption));
 app.get('/', (req, res) => {
     res.json({ message: "Backend is running..." });
 });
-app.use('/api/auth', authRouter);
-app.use('/api/menu', menuRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 export default app;

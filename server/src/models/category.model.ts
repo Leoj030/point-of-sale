@@ -11,8 +11,8 @@ const categorySchema: Schema<ICategory> = new Schema({
 }, 
 {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: { virtuals: true, versionKey: false, transform: (doc, ret) => { delete ret.id; return ret; } },
+    toObject: { virtuals: true, versionKey: false, transform: (doc, ret) => { delete ret.id; return ret; } },
 });
 
 // --- Virtual Field --- \\

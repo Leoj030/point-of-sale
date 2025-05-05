@@ -1,9 +1,4 @@
-interface ApiResponse<T> {
-    success: boolean;
-    message: string;
-    data?: T;
-    error?: T;
-}
+import { ApiResponse } from "../interfaces/api.response.ts";
 
 export const successResponse = <T>(message: string, data?: T): ApiResponse<T> => {
     return {

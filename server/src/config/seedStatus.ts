@@ -1,4 +1,4 @@
-import statusModel from "src/models/statusModel.ts";
+import statusModel from "src/models/status.model.ts";
 import status from "src/enums/status.ts";
 
 const seedStatus = async (): Promise<void> => {

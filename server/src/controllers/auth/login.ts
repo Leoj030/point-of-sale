@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import userModel from 'src/models/userModel.ts';
+import userModel from 'src/models/user.model.ts';
 import { MAX_AGE, EXPIRE_AT } from './tokenVar.ts';
 import { successResponse, errorResponse } from 'src/utils/apiResponse.ts';
 
@@ -32,7 +32,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
             throw new Error("JWT_SECRET_KEY is not defined in the environment variables");
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: EXPIRE_AT });
+        const token = jwt.sign({ id: user._id.toString(), tokenVersion: user.tokenVersion }, process.env.JWT_SECRET_KEY, { expiresIn: EXPIRE_AT });
 
         res.cookie('token', token, {
             httpOnly: true,
@@ -41,7 +41,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
             maxAge: MAX_AGE * 24 * 60 * 60 * 1000,
         });
 
-        res.json(successResponse("Login successful"));
+        res.json(successResponse("Login successful", { token: token }));
     } catch (error) {
         res.status(500).json(errorResponse("Internal server error, please try again later."));
         console.error("Error during login:", error);

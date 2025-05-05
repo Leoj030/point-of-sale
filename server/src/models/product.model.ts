@@ -1,4 +1,3 @@
-// src/models/Product.model.ts (or wherever your schema is)
 import mongoose, { Schema } from 'mongoose';
 import { IProduct } from '../interfaces/product.ts';
 
@@ -12,8 +11,8 @@ const ProductSchema: Schema<IProduct> = new Schema({
   }, 
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: { virtuals: true, versionKey: false, transform: (doc, ret) => { delete ret.id; return ret; } },
+    toObject: { virtuals: true, versionKey: false, transform: (doc, ret) => { delete ret.id; return ret; } },
   });
 
 const ProductModel = mongoose.model<IProduct>('Product', ProductSchema);

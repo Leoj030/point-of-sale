@@ -1,4 +1,4 @@
-import userRolesModel from '../models/userRolesModel.ts';
+import userRolesModel from '../models/roles.model.ts';
 import roles from '../enums/roles.ts';
 
 const seedRoles = async (): Promise<void> => {

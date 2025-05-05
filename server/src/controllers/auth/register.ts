@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import userModel from 'src/models/userModel.ts';
-import { EXPIRE_AT, MAX_AGE } from './tokenVar.ts';
+import userModel from 'src/models/user.model.ts';
+import { EXPIRE_AT } from './tokenVar.ts';
 import { successResponse, errorResponse } from 'src/utils/apiResponse.ts';
 
 const register = async (req: Request, res: Response): Promise<void> => {
@@ -35,14 +35,14 @@ const register = async (req: Request, res: Response): Promise<void> => {
             throw new Error("JWT_SECRET_KEY is not defined in the environment variables");
         }
 
-        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: EXPIRE_AT });
+        jwt.sign({ id: newUser._id.toString(), tokenVersion: newUser.tokenVersion }, process.env.JWT_SECRET_KEY, { expiresIn: EXPIRE_AT });
         
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            maxAge: MAX_AGE * 24 * 60 * 60 * 1000, // 7 days
-        });
+        // res.cookie('token', token, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === 'production',
+        //     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        //     maxAge: MAX_AGE * 24 * 60 * 60 * 1000, // 7 days
+        // });
 
         res.json(successResponse("User registered successfully"));
     } catch (error) {
