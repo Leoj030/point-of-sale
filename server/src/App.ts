@@ -12,12 +12,14 @@ import seed from './config/seed.ts';
 const app = express();
 
 // Initialize MongoDB connection and seed roles
-connectDB();
-seedRoles();
-seedStatus();
-seed();
+(async () => {
+    await connectDB();
+    await seedRoles();
+    await seedStatus();
+    await seed();
 
-app.use(express.json());
+    app.use(express.json());
+})();
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors(corsOption));
