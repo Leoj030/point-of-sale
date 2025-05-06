@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import roles from '../enums/roles.ts';
 import status from '../enums/status.ts';
 
 const userSchema = new mongoose.Schema({
@@ -12,21 +11,6 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function (next) {
-    if (!this.role) {
-        try {
-            const RoleModel = mongoose.model('Role');
-            const cashierRole = await RoleModel.findOne({
-                name: roles.CASHIER,
-            });
-            if (cashierRole) {
-                this.role = cashierRole._id;
-            } else {
-                return next(new Error('Default cashier role not found in the database.'));
-            }
-        } catch (error) {
-            return next(error as mongoose.Error);
-        }
-    }
     
     if (!this.status) {
         try {

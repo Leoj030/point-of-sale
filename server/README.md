@@ -2,7 +2,7 @@
 
 ## Overview
 
-This server provides a RESTful API for authentication and inventory management. All endpoints accept and return data in **JSON format**.
+This server provides a RESTful API for authentication, user management, and inventory management. All endpoints accept and return data in **JSON format**.
 
 ### Response Format
 
@@ -10,24 +10,22 @@ All API responses follow this structure:
 
 ```json
 {
-  "success": boolean, // true if the request succeeded, false otherwise
-  "message": string,  // a human-readable message
-  "data"?: any,       // present on success, contains the result
-  "error"?: any       // present on failure, contains error details
+  "success": boolean,
+  "message": string,
+  "data"?: any,
+  "error"?: any
 }
 ```
 
 ---
 
-## Authentication Routes
+## Authentication
 
 Base path: `/api/auth`
 
-### POST `/api/auth/register`
-
-- **Description:** Register a new user.
-- **Request Body:** `{ name: string, username: string, password: string }`
-- **Response:** JSON (see above)
+- **JWT-based authentication** with token versioning for session invalidation.
+- **Secure password hashing** using bcrypt.
+- **Validation** for all input fields.
 
 ### POST `/api/auth/login`
 
@@ -43,7 +41,44 @@ Base path: `/api/auth`
 
 ---
 
-## Inventory Routes
+## User Management
+
+Base path: `/api/user`
+
+- **All user routes are protected and require admin role.**
+- **Full CRUD operations** for users.
+- **Strong validation** for all user fields.
+
+### POST `/api/user/register`
+
+- **Description:** Register a new user (admin only).
+- **Headers:** `Authorization: Bearer <token>`
+- **Request Body:** `{ name: string, username: string, password: string, role: string }`
+- **Response:** JSON
+
+### GET `/api/user/list`
+
+- **Description:** List all users (admin only).
+- **Headers:** `Authorization: Bearer <token>`
+- **Query Parameters:** `userId` (optional), `sort` (optional: 'alpha-desc' or ascending)
+- **Response:** JSON array of users in `data`.
+
+### PUT `/api/user/update/:id`
+
+- **Description:** Update a user by ID (admin only).
+- **Headers:** `Authorization: Bearer <token>`
+- **Request Body:** Any updatable user fields (`name`, `username`, `password`, `role`, `isActive`)
+- **Response:** JSON
+
+### DELETE `/api/user/delete/:id`
+
+- **Description:** Delete a user by ID (admin only).
+- **Headers:** `Authorization: Bearer <token>`
+- **Response:** JSON
+
+---
+
+## Inventory
 
 Base path: `/api/inventory`
 
@@ -81,14 +116,13 @@ Base path: `/api/inventory`
 - **Description:** List all products. Supports query parameters:
   - `categoryId` (optional): Filter by category. Use 'all' or empty for all categories.
   - `sort` (optional): Use 'alpha-desc' for descending alphabetical order, otherwise ascending.
-- **Example:** `/api/inventory/products?categoryId=<categoryId>&sort=alpha-desc`
 - **Response:** JSON array of products in `data`.
 
 #### POST `/api/inventory/products`
 
 - **Description:** Create a new product (admin only).
 - **Headers:** `Authorization: Bearer <token>`
-- **Request Body:** `{ name, description, price, imageUrl, categoryId }`
+- **Request Body:** `{ name, description, price, imageUrl, category }`
 - **Response:** JSON
 
 #### PUT `/api/inventory/products/:id`
@@ -106,31 +140,49 @@ Base path: `/api/inventory`
 
 ---
 
+## Validation
+
+- All endpoints use strong validation (see `src/validators/`).
+- Validation errors are returned in the standard response format.
+
+---
+
 ## Notes
 
 - All endpoints require and return JSON.
 - All protected routes require a valid JWT in the `Authorization` header as `Bearer <token>`.
 - The `success` and `message` fields are always present in responses. `data` is present on success, `error` on failure.
-- Validation errors and authentication errors are returned in the standard response format.
 
-### Json Format for creating/updating categories
+---
+
+### Example JSON for creating/updating categories
 
 ```json
 {
-  "name": string
+  "name": "Beverages"
+}
+```
+
+### Example JSON for creating/updating products
+
+```json
+{
+  "name": "Coffee",
+  "description": "Freshly brewed coffee",
+  "price": 100,
+  "imageUrl": "https://example.com/coffee.jpg",
+  "category": "CATEGORY_ID"
 }
 ```
 
 ---
 
-### Json Format for creating/updating products
+**Features:**
 
-```json
-{
-  "name": string,
-  "description": string,
-  "price": number,
-  "imageUrl": string,
-  "category": string
-}
-```
+- Robust authentication and session management
+- Full user CRUD with admin protection
+- Inventory and category management
+- Strong validation and error handling
+- Consistent API response format
+
+For more details, see the code in the `src/` directory.
