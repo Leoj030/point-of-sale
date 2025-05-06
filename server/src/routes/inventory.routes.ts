@@ -5,6 +5,7 @@ import { checkRole, isAuthenticated } from '../middleware/auth.middleware.ts';
 import { handleValidationErrors } from '../middleware/validation.middleware.ts';
 import * as inventoryValidator from '../validators/inventory.validator.ts';
 import roles from '../enums/roles.ts';
+import ordersRouter from './orders.routes.ts';
 
 const router = express.Router();
 
@@ -72,5 +73,7 @@ router.delete(
     handleValidationErrors,
     productController.deleteProduct
 );
+
+router.use('/orders', ordersRouter);
 
 export default router;

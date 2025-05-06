@@ -8,10 +8,10 @@ import connectDB from './config/mongodb.ts';
 import seedRoles from './config/seedRoles.ts';
 import seedStatus from './config/seedStatus.ts';
 import userRoutes from './routes/user.routes.ts';
+import salesReportRoutes from './routes/salesReport.routes.ts';
 
 const app = express();
 
-// Initialize MongoDB connection and seed roles
 (async () => {
     await connectDB();
     await seedRoles();
@@ -30,5 +30,6 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/reports/sales', salesReportRoutes);
 
 export default app;
