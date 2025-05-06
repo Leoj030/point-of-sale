@@ -56,7 +56,6 @@ export const validateCreateProduct = [
                 return Promise.reject('Category not found.');
             }
         }),
-    // 'isActive' is set to true by default
 ];
 
 export const validateUpdateProduct = [

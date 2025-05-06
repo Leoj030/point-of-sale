@@ -7,12 +7,7 @@ import { successResponse, errorResponse } from 'src/utils/apiResponse.ts';
 
 const login = async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body;
-
-    if (!username || !password) {
-        res.status(400).json(errorResponse("Missing credentials"));
-        return;
-    }
-
+    
     try {
         const user = await userModel.findOne( { username });
 

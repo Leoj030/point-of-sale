@@ -7,7 +7,7 @@ import corsOption from './config/corsOption.ts';
 import connectDB from './config/mongodb.ts';
 import seedRoles from './config/seedRoles.ts';
 import seedStatus from './config/seedStatus.ts';
-import seed from './config/seed.ts';
+import userRoutes from './routes/user.routes.ts';
 
 const app = express();
 
@@ -16,7 +16,6 @@ const app = express();
     await connectDB();
     await seedRoles();
     await seedStatus();
-    await seed();
 })();
 
 app.use(express.json());
@@ -26,9 +25,10 @@ app.use(cors(corsOption));
 
 // API Endpoints
 app.get('/', (req, res) => {
-    res.json({ message: "Backend is running..." });
+    res.json({ message: "Server is running..." });
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/user', userRoutes);
 
 export default app;
