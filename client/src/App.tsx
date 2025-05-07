@@ -5,6 +5,7 @@ import { AuthContext } from './context/AuthContext';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import ProtectedRoute from './routes/ProtectedRoute';
+import Staff from './pages/Staff';
 
 const LoginRedirect = () => {
   const { token } = useContext(AuthContext);
@@ -22,6 +23,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/staff"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Staff />
               </Layout>
             </ProtectedRoute>
           }

@@ -24,9 +24,21 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
         const userList = await User.find(filter)
             .sort(sortOptions)
             .select(['-password', '-__v', '-tokenVersion'])
+            .populate('role', 'name')
+            .populate('status', 'name')
             .lean();
 
-        res.json(successResponse("Users fetched successfully", userList));
+        const mappedUsers = userList.map(user => ({
+            ...user,
+            role: typeof user.role === 'object' && user.role && 'name' in user.role
+              ? String(user.role.name).toUpperCase()
+              : '',
+            status: typeof user.status === 'object' && user.status && 'name' in user.status
+              ? String(user.status.name).toLowerCase()
+              : '',
+        }));
+
+        res.json(successResponse("Users fetched successfully", mappedUsers));
     } catch (error) {
         console.error("Error fetching users:", error);
         res.status(500).json(errorResponse("Internal server error, please try again later."));
