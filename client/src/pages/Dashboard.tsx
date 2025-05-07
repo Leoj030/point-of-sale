@@ -1,11 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-
-interface SalesData {
-  today: number;
-  thisWeek: number;
-  thisMonth: number;
-}
+import { SalesData, SalesReportResponse } from '../types/sales';
 
 const Dashboard: React.FC = () => {
   const [sales, setSales] = useState<SalesData | null>(null);
@@ -14,7 +9,8 @@ const Dashboard: React.FC = () => {
     const fetchSalesReport = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:3000/api/reports/sales', {
+
+        const response = await axios.get<SalesReportResponse>('http://localhost:3000/api/reports/sales', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

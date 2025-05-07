@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Staff from './pages/Staff';
+import Orders from './pages/Orders';
 
 const LoginRedirect = () => {
   const { token } = useContext(AuthContext);
@@ -33,6 +34,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Staff />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Orders />
               </Layout>
             </ProtectedRoute>
           }
