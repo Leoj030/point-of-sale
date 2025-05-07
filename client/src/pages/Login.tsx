@@ -14,8 +14,16 @@ const Login: React.FC = () => {
         username,
         password,
       });
-      const token = response.data.token;
-      login(token);
+  
+      console.log('Login response:', response.data);
+      const token = response.data.data.token;
+      console.log('Extracted token:', token);
+  
+      if (token) {
+        login(token);
+      } else {
+        console.error('Token not found in response');
+      }
     } catch (error) {
       console.error('Login failed:', error);
       alert('Invalid credentials');
