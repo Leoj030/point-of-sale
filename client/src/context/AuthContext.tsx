@@ -1,4 +1,6 @@
-import React, { createContext, ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { AuthProviderProps } from '../types/auth';
+import { createContext } from 'react';
 
 interface AuthContextType {
   token: string | null;
@@ -6,10 +8,7 @@ interface AuthContextType {
   logout: () => void;
 }
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType>({
   token: null,
   login: () => {},

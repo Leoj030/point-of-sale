@@ -1,22 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import API from '../api/axios';
-import { User } from '../types/user';
-
-interface UserWithStatus extends User {
-  status?: { name: string } | string;
-}
+import { UserWithStatus, ApiResponse, FormState } from '../types/api';
 
 const emptyForm = { name: '', username: '', password: '', role: 'CASHIER', isActive: true };
-
-type FormState = typeof emptyForm & { _id?: string };
-
-// API response type
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data?: T;
-  error?: T;
-}
 
 const Staff: React.FC = () => {
   const [users, setUsers] = useState<UserWithStatus[]>([]);
@@ -96,7 +82,7 @@ const Staff: React.FC = () => {
     try {
       if (isEdit && form._id) {
         const { _id, ...updateData } = form;
-        // Do not send password if blank
+        
         if (updateData.password === '') {
           delete updateData.password;
         }
