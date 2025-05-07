@@ -81,15 +81,7 @@ export const validateUpdateUser = [
     .trim()
     .notEmpty().withMessage('Role is required.')
     .isString().withMessage('Role must be a string.')
-    .custom(async (roleName, { req }) => {
-        const userId = req.params?.id;
-        if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-            return true;
-        }
-        const user = await User.findById(userId).populate('role');
-        if (user && user.role && typeof user.role === 'object' && 'name' in user.role && typeof user.role.name === 'string' && user.role.name.toLowerCase() === roleName.toLowerCase()) {
-            return Promise.reject('User already has this role.');
-        }
+    .custom(async (roleName) => {
         const roleExists = await Roles.findOne({ name: roleName.toLowerCase() });
         if (!roleExists) {
             return Promise.reject('Role not found.');

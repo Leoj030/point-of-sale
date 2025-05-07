@@ -24,6 +24,9 @@ const Sidebar: React.FC = () => {
         <Link to="/orders" className="text-gray-700 hover:text-blue-500">
           Orders
         </Link>
+        <Link to="/staff" className="text-gray-700 hover:text-blue-500">
+          Staff
+        </Link>
         <Link to="/reports" className="text-gray-700 hover:text-blue-500">
           Reports
         </Link>
