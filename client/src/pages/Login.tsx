@@ -1,13 +1,11 @@
 import axios from 'axios';
 import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +16,6 @@ const Login: React.FC = () => {
       });
       const token = response.data.token;
       login(token);
-      navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
       alert('Invalid credentials');
