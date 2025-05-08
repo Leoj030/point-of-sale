@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import Order from '../../models/order.model.js';
+import Product from '../../models/product.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import { successResponse, errorResponse } from '../../utils/apiResponse.js';
 import { validationResult } from 'express-validator';
@@ -18,6 +19,37 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
     }
     try {
         const { items, orderType, paymentMethod } = req.body;
+
+        for (const item of items) {
+            const product = await Product.findById(item.id);
+
+            if (!product) {
+                res.status(400).json(errorResponse(`Product with ID ${item.id} not found.`));
+                return;
+            }
+
+            if (product.quantity < item.quantity) {
+                res.status(400).json(errorResponse(`Insufficient stock for product: ${product.name}. Available: ${product.quantity}, Ordered: ${item.quantity}`));
+                return;
+            }
+        }
+
+        const productUpdates = [];
+        for (const item of items) {
+            
+            const updatedProduct = await Product.findByIdAndUpdate(
+                item.id,
+                { $inc: { quantity: -item.quantity } },
+                { new: true } 
+            );
+            if (!updatedProduct) {
+            
+                res.status(500).json(errorResponse(`Failed to update quantity for product ID ${item.id} after stock check.`));
+                return;
+            }
+            productUpdates.push(updatedProduct);
+        }
+
         const order = await Order.create({
             orderId: uuidv4(),
             items,
@@ -35,6 +67,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
 export const getOrders = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         const orders = await Order.find().populate('createdBy', 'username').lean();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const filteredOrders = orders.map(({ _id, __v, ...rest }) => rest);
         res.json(successResponse('Orders fetched', filteredOrders));
     } catch (err) {
@@ -49,6 +82,7 @@ export const getOrderById = async (req: AuthenticatedRequest, res: Response): Pr
             res.status(404).json(errorResponse('Order not found'));
             return;
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _id, __v, ...orderWithoutMongoId } = order;
         res.json(successResponse('Order fetched', orderWithoutMongoId));
     } catch (err) {

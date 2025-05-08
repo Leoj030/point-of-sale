@@ -7,6 +7,7 @@ const ProductSchema: Schema<IProduct> = new Schema({
     price: { type: Number, required: true, min: 0 },
     imageUrl: { type: String, required: true },
     category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+    quantity: { type: Number, required: true, min: 0, default: 0 },
     isActive: { type: Boolean, default: true },
   }, 
   {

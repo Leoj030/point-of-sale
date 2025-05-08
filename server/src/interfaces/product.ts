@@ -7,6 +7,7 @@ export interface IProduct extends Document {
     description: string;
     price: number;
     imageUrl: string;
+    quantity: number;
     isActive?: boolean;
     // Optional: Add fields like 'isBestSeller' if needed later
     // isBestSeller?: boolean;

@@ -58,22 +58,38 @@ const Orders: React.FC = () => {
     : products.filter((p) => p.category === selectedCategory);
 
   const addToOrder = (product: Product) => {
+    // Find the full product details from the main list to get current available quantity
+    const productInList = products.find(p => p._id === product._id);
+    if (!productInList || productInList.quantity === 0) {
+      // This should ideally be prevented by the disabled button, but as a safeguard:
+      setError(`Cannot add ${product.name}, it is out of stock.`);
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
+
     setOrderItems((prev) => {
       const existing = prev.find((item) => item.id === product._id);
       if (existing) {
+        // Prevent increasing quantity if it would exceed available stock
+        if (existing.quantity >= productInList.quantity) {
+          setError(`No more stock available for ${product.name}. Max: ${productInList.quantity}`);
+          setTimeout(() => setError(''), 3000);
+          return prev; // Return previous state without changes
+        }
         return prev.map((item) =>
           item.id === product._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
+        // Adding new item, ensure at least 1 is available (already covered by productInList.quantity check)
         return [
           ...prev,
           {
             id: product._id,
             productName: product.name,
             price: product.price,
-            quantity: 1,
+            quantity: 1, // Start with 1
           },
         ];
       }
@@ -87,11 +103,21 @@ const Orders: React.FC = () => {
   const changeQuantity = (id: string, delta: number) => {
     setOrderItems((prev) =>
       prev
-        .map((item) =>
-          item.id === id
-            ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-            : item
-        )
+        .map((item) => {
+          if (item.id === id) {
+            const productInList = products.find(p => p._id === item.id);
+            if (!productInList) return item; // Should not happen
+
+            let newQuantity = item.quantity + delta;
+            if (delta > 0 && newQuantity > productInList.quantity) {
+              newQuantity = productInList.quantity; // Cap at available stock
+              setError(`No more stock available for ${item.productName}. Max: ${productInList.quantity}`);
+              setTimeout(() => setError(''), 3000);
+            }
+            return { ...item, quantity: Math.max(1, newQuantity) };
+          }
+          return item;
+        })
     );
   };
 
@@ -111,6 +137,18 @@ const Orders: React.FC = () => {
       });
       setOrderItems([]);
       setSuccess('Order placed successfully!');
+
+      // Update local product quantities
+      setProducts(prevProducts => 
+        prevProducts.map(p => {
+          const orderedItem = orderItems.find(oi => oi.id === p._id);
+          if (orderedItem) {
+            return { ...p, quantity: p.quantity - orderedItem.quantity };
+          }
+          return p;
+        })
+      );
+
       // Refresh order history
       const orderRes = await fetchOrders();
       setOrderHistory(orderRes || []);
@@ -163,11 +201,15 @@ const Orders: React.FC = () => {
             <div className="font-bold">{product.name}</div>
             <div className="text-gray-600 text-sm mb-2">{product.description}</div>
             <div className="mb-2">₱{product.price}</div>
+            <div className={`text-sm mb-2 ${product.quantity > 0 ? 'text-green-600' : 'text-red-600 font-semibold'}`}>
+              {product.quantity > 0 ? `${product.quantity} available` : 'Out of Stock'}
+            </div>
             <button
-              className="bg-green-500 text-white px-3 py-1 rounded"
+              className={`text-white px-3 py-1 rounded ${product.quantity > 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'}`}
               onClick={() => addToOrder(product)}
+              disabled={product.quantity === 0}
             >
-              + Add
+              {product.quantity > 0 ? '+ Add' : 'Unavailable'}
             </button>
           </div>
         ))}
