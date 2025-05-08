@@ -11,26 +11,31 @@ const Sidebar: React.FC = () => {
     navigate('/login');
   };
 
+  const linkClasses =
+    'block py-2 px-4 rounded hover:bg-gray-700 transition-colors';
+
   return (
-    <div className="h-screen w-64 bg-gray-800 text-white flex flex-col justify-between">
+    <aside className="w-64 bg-gray-800 text-white flex flex-col justify-between">
       <div>
-        <h1 className="text-2xl font-bold p-4 border-b border-gray-700">Sisig ni Law</h1>
-        <nav className="mt-4 flex flex-col gap-2 px-4">
-          <Link to="/" className="py-2 px-3 rounded hover:bg-gray-700">Dashboard</Link>
-          <Link to="/products" className="py-2 px-3 rounded hover:bg-gray-700">Products</Link>
-          <Link to="/orders" className="py-2 px-3 rounded hover:bg-gray-700">Orders</Link>
-          <Link to="/reports" className="py-2 px-3 rounded hover:bg-gray-700">Reports</Link>
+        <div className="p-4 border-b border-gray-700">
+          <h1 className="text-2xl font-bold">Sisig ni Law</h1>
+        </div>
+        <nav className="mt-4 flex flex-col gap-1">
+          <Link to="/" className={linkClasses}>Dashboard</Link>
+          <Link to="/products" className={linkClasses}>Products</Link>
+          <Link to="/orders" className={linkClasses}>Orders</Link>
+          <Link to="/staff" className={linkClasses}>Staff</Link>
         </nav>
       </div>
       <div className="p-4 border-t border-gray-700">
         <button
           onClick={handleLogout}
-          className="w-full text-left py-2 px-3 bg-red-600 hover:bg-red-700 rounded"
+          className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 rounded transition-colors"
         >
           Logout
         </button>
       </div>
-    </div>
+    </aside>
   );
 };
 
