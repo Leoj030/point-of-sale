@@ -9,6 +9,8 @@ const API = axios.create({
   baseURL: API_BASE_URL,
 });
 
+console.log("Axios instance baseURL after creation:", API.defaults.baseURL); // New log
+
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token && config.headers) {
