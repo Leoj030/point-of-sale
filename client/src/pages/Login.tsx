@@ -1,4 +1,4 @@
-import axios from 'axios';
+import API from '../api/axios';
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { LoginResponse } from '../types/api';
@@ -11,7 +11,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post<LoginResponse>('http://localhost:3000/api/auth/login', {
+      const response = await API.post<LoginResponse>('/auth/login', {
         username,
         password,
       });
