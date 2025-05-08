@@ -1,4 +1,4 @@
-import axios from 'axios';
+import API from '../api/axios';
 import React, { useEffect, useState } from 'react';
 import { SalesData, SalesReportResponse } from '../types/sales';
 
@@ -10,7 +10,7 @@ const Dashboard: React.FC = () => {
       try {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get<SalesReportResponse>('http://localhost:3000/api/reports/sales', {
+        const response = await API.get<SalesReportResponse>('/reports/sales', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
