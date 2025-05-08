@@ -1,4 +1,4 @@
-import { OrderType, PaymentMethod, OrderStatus } from '../enums/status.ts';
+import { OrderType, PaymentMethod, OrderStatus } from '../enums/status.js';
 
 export interface OrderItemSnapshot {
     id: string;

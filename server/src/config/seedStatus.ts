@@ -1,5 +1,5 @@
-import statusModel from "src/models/status.model.ts";
-import status from "src/enums/status.ts";
+import statusModel from "../models/status.model.js";
+import status from "../enums/status.js";
 
 const seedStatus = async (): Promise<void> => {
     try {

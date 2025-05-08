@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { getSalesReport } from '../controllers/salesReport.controller.ts';
-import { isAuthenticated, checkRole } from '../middleware/auth.middleware.ts';
-import roles from '../enums/roles.ts';
+import { getSalesReport } from '../controllers/salesReport.controller.js';
+import { isAuthenticated, checkRole } from '../middleware/auth.middleware.js';
+import roles from '../enums/roles.js';
 
 const router = Router();
 

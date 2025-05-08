@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import userModel from 'src/models/user.model.ts';
-import { MAX_AGE, EXPIRE_AT } from './tokenVar.ts';
-import { successResponse, errorResponse } from 'src/utils/apiResponse.ts';
+import userModel from '../../models/user.model.js';
+import { MAX_AGE, EXPIRE_AT } from './tokenVar.js';
+import { successResponse, errorResponse } from '../../utils/apiResponse.js';
 
 const login = async (req: Request, res: Response): Promise<void> => {
     const { username, password } = req.body;

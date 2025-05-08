@@ -1,11 +1,11 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import User from '../models/user.model.ts';
-import { errorResponse } from '../utils/apiResponse.ts';
-import roles from '../enums/roles.ts';
-import status from '../enums/status.ts';
-import { PopulatedRole, PopulatedStatus, PopulatedUser, AuthenticatedRequest, JwtPayload } from '../interfaces/authMiddleware.ts'
+import User from '../models/user.model.js';
+import { errorResponse } from '../utils/apiResponse.js';
+import roles from '../enums/roles.js';
+import status from '../enums/status.js';
+import { PopulatedRole, PopulatedStatus, PopulatedUser, AuthenticatedRequest, JwtPayload } from '../interfaces/authMiddleware.js'
 
 // --- Main Authentication Middleware --- \\
 export const isAuthenticated = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {

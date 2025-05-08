@@ -1,7 +1,7 @@
 import { Response } from 'express';
-import { successResponse, errorResponse } from 'src/utils/apiResponse.ts';
-import { AuthenticatedRequest } from 'src/interfaces/authMiddleware.ts'; // Adjust path if needed
-import userModel from 'src/models/user.model.ts';
+import { successResponse, errorResponse } from '../../utils/apiResponse.js';
+import { AuthenticatedRequest } from '../../interfaces/authMiddleware.js'; // Adjust path if needed
+import userModel from '../../models/user.model.js';
 
 const logout = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {

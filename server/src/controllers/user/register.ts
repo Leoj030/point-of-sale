@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import userModel from 'src/models/user.model.ts';
-import Roles from 'src/models/roles.model.ts';
-import { EXPIRE_AT } from '../auth/tokenVar.ts';
-import { successResponse, errorResponse } from 'src/utils/apiResponse.ts';
+import userModel from '../../models/user.model.js';
+import Roles from '../../models/roles.model.js';
+import { EXPIRE_AT } from '../auth/tokenVar.js';
+import { successResponse, errorResponse } from '../../utils/apiResponse.js';
 
 const register = async (req: Request, res: Response): Promise<void> => {
     const { name, username, password, role } = req.body;
