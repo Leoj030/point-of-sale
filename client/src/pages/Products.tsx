@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import API from '../api/axios'; // Assuming this is your API instance
-import { Category, Product } from '../types/order'; // Assuming you have these types
+import API from '../api/axios';
+import { Category, Product } from '../types/order';
 
 const Products = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -8,14 +8,12 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
 
-  // Form states for creating/editing a product
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
-  // Fetch Categories and Products
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -40,7 +38,6 @@ const Products = () => {
     fetchProducts();
   }, [selectedCategory]);
 
-  // Handle Add Product
   const handleAddProduct = () => {
     setProductToEdit(null);
     setName('');
@@ -50,17 +47,20 @@ const Products = () => {
     setImageUrl('');
   };
 
-  // Handle Edit Product
   const handleEditProduct = (product: Product) => {
     setProductToEdit(product);
     setName(product.name);
     setPrice(product.price);
     setDescription(product.description);
-    setCategory(product.category);
+    setCategory(
+      typeof product.category === 'object' && product.category !== null && '_id' in product.category
+        ? product.category._id
+        : (product.category as string)
+    );
     setImageUrl(product.imageUrl);
   };
+  
 
-  // Handle Delete Product
   const handleDeleteProduct = async (id: string) => {
     try {
       await API.delete(`/inventory/products/${id}`);
@@ -70,19 +70,34 @@ const Products = () => {
     }
   };
 
-  // Handle Save Product (Create/Edit)
-  const handleSaveProduct = async (e: React.FormEvent) => {
+// Handle Save Product (Create/Edit)
+const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     const productData = { name, price, description, category, imageUrl };
-
+  
     try {
+      let updatedProduct: Product | null = null;
+  
       if (productToEdit) {
-        // Update existing product
-        await API.put(`/inventory/products/${productToEdit._id}`, productData);
+        const response = await API.put(`/inventory/products/${productToEdit._id}`, productData);
+        updatedProduct = response.data.data;
+
+        if (typeof updatedProduct.category === 'object' && updatedProduct.category._id) {
+          updatedProduct.category = updatedProduct.category._id;
+        }
+        setProducts(products.map(product =>
+          product._id === updatedProduct._id ? updatedProduct : product
+        ));
       } else {
-        // Create new product
-        await API.post('/inventory/products', productData);
+        const response = await API.post('/inventory/products', productData);
+        updatedProduct = response.data.data;
+        if (typeof updatedProduct.category === 'object' && updatedProduct.category._id) {
+          updatedProduct.category = updatedProduct.category._id;
+        }
+        setProducts([...products, updatedProduct]);
       }
+      
+
       setName('');
       setPrice(0);
       setDescription('');
@@ -93,12 +108,11 @@ const Products = () => {
       console.error("Error saving product", error);
     }
   };
-
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-xl font-semibold mb-4">Products Management</h1>
 
-      {/* Category Filter */}
       <div className="mb-4">
         <label htmlFor="category" className="block text-sm font-medium text-gray-700">Filter by Category</label>
         <select
@@ -114,7 +128,6 @@ const Products = () => {
         </select>
       </div>
 
-      {/* Product Form (Create/Edit) */}
       <div className="mb-4">
         <button
           onClick={handleAddProduct}
@@ -187,7 +200,6 @@ const Products = () => {
         </form>
       </div>
 
-      {/* Product List */}
       <div className="mb-4">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
@@ -199,28 +211,33 @@ const Products = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product._id}>
-                <td className="py-2 px-4 border-b">{product.name}</td>
-                <td className="py-2 px-4 border-b">{product.category}</td>
-                <td className="py-2 px-4 border-b">{product.price}</td>
-                <td className="py-2 px-4 border-b">
-                  <button
-                    onClick={() => handleEditProduct(product)}
-                    className="bg-yellow-500 text-white py-1 px-2 rounded mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProduct(product._id)}
-                    className="bg-red-500 text-white py-1 px-2 rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+            {products.map((product) => {
+                return (
+                    <tr key={product._id}>
+                    <td className="py-2 px-4 border-b">{product.name}</td>
+                    <td className="py-2 px-4 border-b">
+                      {categories.find(c => c._id === product.category)?.name || 'Unknown'}
+                    </td>
+                    <td className="py-2 px-4 border-b">{product.price}</td>
+                    <td className="py-2 px-4 border-b">
+                      <button
+                        onClick={() => handleEditProduct(product)}
+                        className="bg-yellow-500 text-white py-1 px-2 rounded mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(product._id)}
+                        className="bg-red-500 text-white py-1 px-2 rounded"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  
+                );
+            })}
+            </tbody>
         </table>
       </div>
     </div>
