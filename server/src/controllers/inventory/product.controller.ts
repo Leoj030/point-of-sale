@@ -34,7 +34,7 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
 
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name, description, price, imageUrl, category } = req.body;
+        const { name, description, price, imageUrl, category, quantity } = req.body;
 
         const newProductData: Partial<IProduct> = {
             name,
@@ -42,6 +42,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
             price,
             imageUrl,
             category,
+            quantity,
             // isActive defaults to true
         };
 

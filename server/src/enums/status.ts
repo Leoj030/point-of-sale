@@ -13,7 +13,7 @@ export enum OrderStatus {
 
 export enum OrderType {
     DineIn = 'Dine In',
-    TakeOut = 'TakeOut',
+    TakeOut = 'Take Out',
     Delivery = 'Delivery',
 }
 
