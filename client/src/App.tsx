@@ -8,6 +8,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Orders from './pages/Orders';
+import Products from './pages/Products';
 import Staff from './pages/Staff';
 
 import './index.css';
@@ -52,6 +53,17 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Orders />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Products />
                 </Layout>
               </ProtectedRoute>
             }
