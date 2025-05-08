@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import App from './App.ts';
+import App from './App.js';
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 

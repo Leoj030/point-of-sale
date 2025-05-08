@@ -1,10 +1,10 @@
 import { Response } from 'express';
-import Order from '../../models/order.model.ts';
+import Order from '../../models/order.model.js';
 import { v4 as uuidv4 } from 'uuid';
-import { successResponse, errorResponse } from '../../utils/apiResponse.ts';
+import { successResponse, errorResponse } from '../../utils/apiResponse.js';
 import { validationResult } from 'express-validator';
-import { OrderStatus } from '../../enums/status.ts';
-import { AuthenticatedRequest } from '../../interfaces/authMiddleware.ts';
+import { OrderStatus } from '../../enums/status.js';
+import { AuthenticatedRequest } from '../../interfaces/authMiddleware.js';
 
 export const createOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     if (!req.user) {

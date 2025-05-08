@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import Order from '../models/order.model.ts';
-import { successResponse, errorResponse } from '../utils/apiResponse.ts';
+import Order from '../models/order.model.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 import { startOfDay, startOfWeek, startOfMonth, endOfDay, endOfWeek, endOfMonth } from 'date-fns';
 
 const getTotalSales = async (start: Date, end: Date) => {

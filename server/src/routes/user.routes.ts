@@ -1,12 +1,12 @@
 import express from 'express';
-import register from '../controllers/user/register.ts';
-import { checkRole, isAuthenticated } from '../middleware/auth.middleware.ts';
-import { handleValidationErrors } from '../middleware/validation.middleware.ts';
-import * as userValidator from '../validators/user.validator.ts';
-import roles from '../enums/roles.ts';
-import update from 'src/controllers/user/update.ts';
-import deleteUser from 'src/controllers/user/delete.ts';
-import getUsers from 'src/controllers/user/fetchUser.ts';
+import register from '../controllers/user/register.js';
+import { checkRole, isAuthenticated } from '../middleware/auth.middleware.js';
+import { handleValidationErrors } from '../middleware/validation.middleware.js';
+import * as userValidator from '../validators/user.validator.js';
+import roles from '../enums/roles.js';
+import update from '../controllers/user/update.js';
+import deleteUser from '../controllers/user/delete.js';
+import getUsers from '../controllers/user/fetchUser.js';
 
 const userRouter = express.Router();
 

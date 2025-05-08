@@ -1,14 +1,14 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import authRoutes from './routes/auth.routes.ts';
-import inventoryRoutes from './routes/inventory.routes.ts';
+import authRoutes from './routes/auth.routes.js';
+import inventoryRoutes from './routes/inventory.routes.js';
 import cors from 'cors';
-import corsOption from './config/corsOption.ts';
-import connectDB from './config/mongodb.ts';
-import seedRoles from './config/seedRoles.ts';
-import seedStatus from './config/seedStatus.ts';
-import userRoutes from './routes/user.routes.ts';
-import salesReportRoutes from './routes/salesReport.routes.ts';
+import corsOption from './config/corsOption.js';
+import connectDB from './config/mongodb.js';
+import seedRoles from './config/seedRoles.js';
+import seedStatus from './config/seedStatus.js';
+import userRoutes from './routes/user.routes.js';
+import salesReportRoutes from './routes/salesReport.routes.js';
 
 const app = express();
 

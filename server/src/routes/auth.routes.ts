@@ -1,8 +1,8 @@
 import express from 'express';
-import login from '../controllers/auth/login.ts';
-import logout from '../controllers/auth/logout.ts';
-import { isAuthenticated } from '../middleware/auth.middleware.ts';
-import * as userValidator from '../validators/user.validator.ts';
+import login from '../controllers/auth/login.js';
+import logout from '../controllers/auth/logout.js';
+import { isAuthenticated } from '../middleware/auth.middleware.js';
+import * as userValidator from '../validators/user.validator.js';
 
 const authRouter = express.Router();
 

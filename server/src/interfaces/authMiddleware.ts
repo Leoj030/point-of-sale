@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import mongoose from 'mongoose';
-import roles from '../enums/roles.ts';
-import status from '../enums/status.ts';
+import roles from '../enums/roles.js';
+import status from '../enums/status.js';
 
 export interface PopulatedRole {
     _id: mongoose.Types.ObjectId;

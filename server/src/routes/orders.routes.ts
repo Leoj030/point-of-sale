@@ -5,9 +5,9 @@ import {
     getOrderById,
     updateOrderStatus,
     deleteOrder
-} from '../controllers/inventory/order.controller.ts';
-import { createOrderValidator, updateOrderStatusValidator } from '../validators/order.validator.ts';
-import { isAuthenticated } from '../middleware/auth.middleware.ts';
+} from '../controllers/inventory/order.controller.js';
+import { createOrderValidator, updateOrderStatusValidator } from '../validators/order.validator.js';
+import { isAuthenticated } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import userModel from 'src/models/user.model.ts';
-import { successResponse, errorResponse } from 'src/utils/apiResponse.ts';
-import Roles from 'src/models/roles.model.ts';
-import StatusModel from 'src/models/status.model.ts';
-import statusEnum from 'src/enums/status.ts';
+import userModel from '../../models/user.model.js';
+import { successResponse, errorResponse } from '../../utils/apiResponse.js';
+import Roles from '../../models/roles.model.js';
+import StatusModel from '../../models/status.model.js';
+import statusEnum from '../../enums/status.js';
 
 const updateUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
