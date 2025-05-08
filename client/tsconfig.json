@@ -3,6 +3,7 @@
     "target": "esnext",
     "lib": ["dom", "esnext"],
     "jsx": "react-jsx",  // This enables JSX for React 17+; use "react" if using React 16 or below
+    "module": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
