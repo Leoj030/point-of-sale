@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.js';
 import inventoryRoutes from './routes/inventory.routes.js';
+import receiptRoutes from './routes/receipt.routes.js';
 import cors from 'cors';
 import corsOption from './config/corsOption.js';
 import connectDB from './config/mongodb.js';
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/receipts', receiptRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/reports/sales', salesReportRoutes);
 

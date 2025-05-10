@@ -3,6 +3,15 @@ import { fetchCategories } from '../api/category';
 import { fetchProducts } from '../api/product';
 import { fetchOrders, createOrder, updateOrderStatus } from '../api/order';
 import { Category, Product, OrderItem, OrderHistoryItem } from '../types/order';
+import API from '../api/axios';
+
+interface CreateOrderPayload {
+  items: OrderItem[];
+  orderType: string;
+  paymentMethod: string;
+  status: string;
+  amountPaid: number;
+}
 
 const orderTypes = [
   { value: 'Dine In', label: 'Dine In' },
@@ -32,6 +41,9 @@ const Orders: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [amountPaid, setAmountPaid] = useState<string>(''); 
+  const [changeGiven, setChangeGiven] = useState<number | null>(null); 
+  const [lastCompletedOrder, setLastCompletedOrder] = useState<{ id: string; change: number } | null>(null); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,23 +70,29 @@ const Orders: React.FC = () => {
     : products.filter((p) => p.category === selectedCategory);
 
   const addToOrder = (product: Product) => {
-    // Find the full product details from the main list to get current available quantity
     const productInList = products.find(p => p._id === product._id);
     if (!productInList || productInList.quantity === 0) {
-      // This should ideally be prevented by the disabled button, but as a safeguard:
       setError(`Cannot add ${product.name}, it is out of stock.`);
       setTimeout(() => setError(''), 3000);
       return;
     }
 
+    // Update the product quantity immediately
+    setProducts(prevProducts => 
+      prevProducts.map(p => 
+        p._id === product._id 
+          ? { ...p, quantity: p.quantity - 1 }
+          : p
+      )
+    );
+
     setOrderItems((prev) => {
       const existing = prev.find((item) => item.id === product._id);
       if (existing) {
-        // Prevent increasing quantity if it would exceed available stock
         if (existing.quantity >= productInList.quantity) {
           setError(`No more stock available for ${product.name}. Max: ${productInList.quantity}`);
           setTimeout(() => setError(''), 3000);
-          return prev; // Return previous state without changes
+          return prev; 
         }
         return prev.map((item) =>
           item.id === product._id
@@ -82,14 +100,13 @@ const Orders: React.FC = () => {
             : item
         );
       } else {
-        // Adding new item, ensure at least 1 is available (already covered by productInList.quantity check)
         return [
           ...prev,
           {
             id: product._id,
             productName: product.name,
             price: product.price,
-            quantity: 1, // Start with 1
+            quantity: 1, 
           },
         ];
       }
@@ -106,11 +123,11 @@ const Orders: React.FC = () => {
         .map((item) => {
           if (item.id === id) {
             const productInList = products.find(p => p._id === item.id);
-            if (!productInList) return item; // Should not happen
+            if (!productInList) return item; 
 
             let newQuantity = item.quantity + delta;
             if (delta > 0 && newQuantity > productInList.quantity) {
-              newQuantity = productInList.quantity; // Cap at available stock
+              newQuantity = productInList.quantity; 
               setError(`No more stock available for ${item.productName}. Max: ${productInList.quantity}`);
               setTimeout(() => setError(''), 3000);
             }
@@ -125,37 +142,68 @@ const Orders: React.FC = () => {
 
   const handleCheckout = async () => {
     if (orderItems.length === 0) return;
+    if (!amountPaid || parseFloat(amountPaid) < total) {
+      setError('Amount paid must be greater than or equal to the total.');
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
+
     setLoading(true);
     setError('');
     setSuccess('');
+    setChangeGiven(null);
+    setLastCompletedOrder(null);
+
     try {
-      await createOrder({
+      const response = await createOrder({
         items: orderItems,
         orderType,
         paymentMethod,
-        status: orderStatus,
-      });
-      setOrderItems([]);
-      setSuccess('Order placed successfully!');
+        status: 'Completed', 
+        amountPaid: parseFloat(amountPaid),
+      } as CreateOrderPayload);
+      
+      if (response && response.success && response.data) {
+        setOrderItems([]);
+        setAmountPaid('');
+        setChangeGiven(response.data.changeGiven);
+        setLastCompletedOrder({ id: response.data.orderId, change: response.data.changeGiven });
+        setSuccess(`Order placed successfully! Change: $${response.data.changeGiven.toFixed(2)}`);
 
-      // Update local product quantities
-      setProducts(prevProducts => 
-        prevProducts.map(p => {
-          const orderedItem = orderItems.find(oi => oi.id === p._id);
-          if (orderedItem) {
-            return { ...p, quantity: p.quantity - orderedItem.quantity };
-          }
-          return p;
-        })
-      );
+        setProducts(prevProducts => 
+          prevProducts.map(p => {
+            const orderedItem = orderItems.find(oi => oi.id === p._id);
+            if (orderedItem) {
+              return { ...p, quantity: p.quantity - orderedItem.quantity };
+            }
+            return p;
+          })
+        );
 
-      // Refresh order history
-      const orderRes = await fetchOrders();
-      setOrderHistory(orderRes || []);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to place order');
+        const orderRes = await fetchOrders();
+        setOrderHistory(orderRes || []);
+      } else {
+        setError(response?.message || 'Failed to place order. Unexpected response structure.');
+      }
+    } catch (err: unknown) { 
+      let errorMessage = 'Failed to place order';
+      if (typeof err === 'object' && err !== null) {
+        if ('response' in err) {
+            const errResponse = (err as { response?: { data?: { message?: string } } }).response;
+            if (errResponse?.data?.message) {
+                errorMessage = errResponse.data.message;
+            } else if ('message' in err && typeof (err as {message?:unknown}).message === 'string'){
+                 // Fallback to top-level error message if response.data.message is not specific
+                errorMessage = (err as {message: string}).message;
+            }
+        } else if ('message' in err && typeof (err as {message?:unknown}).message === 'string') {
+            errorMessage = (err as {message: string}).message;
+        }
+      }
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const updateOrderStatusHandler = async (orderId: string, newStatus: string) => {
@@ -163,7 +211,6 @@ const Orders: React.FC = () => {
     setError('');
     try {
       await updateOrderStatus(orderId, newStatus);
-      // Refresh order history
       const orderRes = await fetchOrders();
       setOrderHistory(orderRes || []);
     } catch (err) {
@@ -246,7 +293,7 @@ const Orders: React.FC = () => {
             </tbody>
           </table>
         )}
-        <div className="mb-2">Total: <span className="font-bold">₱{total}</span></div>
+        <div className="mb-2">Total: <span className="font-bold">₱{total.toFixed(2)}</span></div>
         <div className="mb-2 flex gap-2">
           <label>Order Type:
             <select
@@ -282,63 +329,109 @@ const Orders: React.FC = () => {
             </select>
           </label>
         </div>
+        <div className="mt-4">
+          <label htmlFor="amountPaid" className="block text-sm font-medium text-gray-700">Amount Paid:</label>
+          <input 
+            type="number" 
+            id="amountPaid" 
+            value={amountPaid}
+            onChange={(e) => setAmountPaid(e.target.value)}
+            placeholder="Enter amount customer paid"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        {changeGiven !== null && (
+          <div className="mt-2 text-lg font-semibold text-green-600">
+            Change Due: ${changeGiven.toFixed(2)}
+          </div>
+        )}
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded mt-2 w-full disabled:opacity-50"
           onClick={handleCheckout}
-          disabled={orderItems.length === 0 || loading}
+          disabled={orderItems.length === 0 || loading || !amountPaid || parseFloat(amountPaid) < total}
         >
           {loading ? 'Placing Order...' : 'Checkout'}
         </button>
-      </div>
-      <div className="mt-8">
-        <h2 className="text-lg font-bold mb-2">Order History</h2>
-        {orderHistory.length === 0 ? (
-          <div className="text-gray-500">No orders yet.</div>
-        ) : (
-          <table className="w-full text-sm bg-white rounded shadow">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Status</th>
-                <th>Type</th>
-                <th>Payment</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Created</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orderHistory.map((order) => (
-                <tr key={order.orderId} className={order.status === 'Pending' ? 'bg-yellow-50' : ''}>
-                  <td>{order.orderId.slice(0, 8)}</td>
-                  <td>{order.status}</td>
-                  <td>{order.orderType}</td>
-                  <td>{order.paymentMethod}</td>
-                  <td>
-                    {order.items.map((item) => (
-                      <div key={item.id}>{item.productName} x{item.quantity}</div>
-                    ))}
-                  </td>
-                  <td>₱{order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)}</td>
-                  <td>{new Date(order.createdAt).toLocaleString()}</td>
-                  <td>
-                    {order.status === 'Pending' && (
-                      <button
-                        className="bg-green-500 text-white px-2 py-1 rounded"
-                        onClick={() => updateOrderStatusHandler(order.orderId, 'Completed')}
-                        disabled={loading}
-                      >
-                        Mark Completed
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        {lastCompletedOrder && (
+          <button 
+            onClick={() => window.open(`/receipt/${lastCompletedOrder.id}`, '_self')} 
+            className="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            Print Receipt for Last Order
+          </button>
         )}
       </div>
+      <div className="mt-8 flex items-center justify-between">
+        <h2 className="text-lg font-bold mb-2">Order History</h2>
+        <button
+          style={{ background: 'none', border: 'none', padding: 0, marginLeft: '1rem', cursor: 'pointer', color: 'black', fontSize: '2rem', fontWeight: 'bold', lineHeight: 1 }}
+          title="Delete Order History"
+          onClick={async () => {
+            if (window.confirm('Are you sure you want to delete all order history? This action cannot be undone.')) {
+              try {
+                setLoading(true);
+                setError('');
+                await API.delete('/inventory/orders');
+                setOrderHistory([]);
+              } catch {
+                setError('Failed to delete order history.');
+              } finally {
+                setLoading(false);
+              }
+            }
+          }}
+        >
+          x
+        </button>
+      </div>
+      {orderHistory.length === 0 ? (
+        <div className="text-gray-500">No orders yet.</div>
+      ) : (
+        <table className="w-full text-sm bg-white rounded shadow">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Status</th>
+              <th>Type</th>
+              <th>Payment</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Created</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orderHistory.map((order) => (
+              <tr key={order.orderId} className={order.status === 'Pending' ? 'bg-yellow-50' : ''}>
+                <td>{order.orderId.slice(0, 8)}</td>
+                <td>{order.status}</td>
+                <td>{order.orderType}</td>
+                <td>{order.paymentMethod}</td>
+                <td>
+                  {order.items.map((item) => (
+                    <div key={item.id}>{item.productName} x{item.quantity}</div>
+                  ))}
+                </td>
+                <td>₱{order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)}</td>
+                <td>{new Date(order.createdAt).toLocaleString()}</td>
+                <td>
+                  {order.status === 'Pending' && (
+                    <button
+                      className="bg-green-500 text-white px-2 py-1 rounded"
+                      onClick={() => updateOrderStatusHandler(order.orderId, 'Completed')}
+                      disabled={loading}
+                    >
+                      Mark Completed
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
