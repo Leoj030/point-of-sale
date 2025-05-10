@@ -1,1 +1,50 @@
 @import "tailwindcss";
+
+/* Add custom print styles below */
+@media print {
+  /* Hide the sidebar */
+  #app-sidebar {
+    display: none !important;
+  }
+
+  /* Ensure the main content (where ReceiptView is) takes full width */
+  #app-main-content {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important; /* Show all content, don't clip */
+    /* Remove any background color that might be set on main for screen view */
+    background-color: #fff !important; 
+  }
+
+  /* General body and html resets for print */
+  body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #fff !important; /* Ensure white background for printing */
+    width: 100% !important; /* Ensure body/html also take up full width */
+  }
+
+  /* Styles for the receipt container itself */
+  .print-receipt-container {
+    max-width: none !important; /* Remove max-width restriction */
+    width: 76mm !important; /* Set a fixed width suitable for 80mm receipt paper */
+    margin: 0 !important;    /* Remove screen margins, align left */
+    padding: 3mm !important;  /* Adjust padding for fixed width, e.g., 3mm */
+    box-shadow: none !important; /* Remove shadow */
+    border: none !important; /* Remove any borders if they exist */
+    font-size: 9pt !important; /* Adjust font size for smaller paper if needed */
+    color: #000 !important; /* Ensure black text for readability */
+  }
+  
+  /* Hide the "Print Receipt" button on the receipt itself when printing */
+  .print-receipt-container button {
+      display: none !important;
+  }
+
+  /* Optional: Ensure no page breaks within important sections if possible */
+  .print-receipt-container table, 
+  .print-receipt-container .text-right { /* e.g., totals section */
+    page-break-inside: avoid !important;
+  }
+}
