@@ -1,4 +1,4 @@
-import { Box, ClipboardList, LayoutDashboard, LogOut, Users } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import React, { useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -29,11 +29,11 @@ const Sidebar: React.FC = () => {
         </div>
 
         <nav className="mt-4 flex flex-col gap-1">
-          <Link to="/" className={linkClasses}>Dashboard</Link>
-          <Link to="/categories" className={linkClasses}>Categories</Link>
-          <Link to="/products" className={linkClasses}>Products</Link>
-          <Link to="/orders" className={linkClasses}>Orders</Link>
-          <Link to="/staff" className={linkClasses}>Staff</Link>
+          <NavLink to="/" className={linkClasses}>Dashboard</NavLink>
+          <NavLink to="/categories" className={linkClasses}>Categories</NavLink>
+          <NavLink to="/products" className={linkClasses}>Products</NavLink>
+          <NavLink to="/orders" className={linkClasses}>Orders</NavLink>
+          <NavLink to="/staff" className={linkClasses}>Staff</NavLink>
         </nav>
       </div>
       <div className="p-6">
