@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { fetchCategories } from '../api/category';
-import { createOrder, fetchOrders, updateOrderStatus } from '../api/order';
 import { fetchProducts } from '../api/product';
 import { fetchOrders, createOrder, updateOrderStatus } from '../api/order';
 import { Category, Product, OrderItem, OrderHistoryItem } from '../types/order';
@@ -280,10 +279,25 @@ const Orders: React.FC = () => {
                   <th>Price</th>
                   <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {orderItems.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.productName}</td>
+                    <td>
+                      <button onClick={() => changeQuantity(item.id, -1)} className="px-2">-</button>
+                      {item.quantity}
+                      <button onClick={() => changeQuantity(item.id, 1)} className="px-2">+</button>
+                    </td>
+                    <td>₱{item.price * item.quantity}</td>
+                    <td>
+                      <button onClick={() => removeFromOrder(item.id)} className="text-red-500">x</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         <div className="mb-2">Total: <span className="font-bold">₱{total.toFixed(2)}</span></div>
         <div className="mb-2 flex gap-2">
           <label>Order Type:
@@ -353,7 +367,9 @@ const Orders: React.FC = () => {
             Print Receipt for Last Order
           </button>
         )}
-      </div>
+      </div> {/* End of Order Summary */}
+      </div> {/* End of flex gap-4 mb-8 */}
+      {/* Order History Section */}
       <div className="mt-8 flex items-center justify-between">
         <h2 className="text-lg font-bold mb-2">Order History</h2>
         <button
@@ -366,6 +382,7 @@ const Orders: React.FC = () => {
                 setError('');
                 await API.delete('/inventory/orders');
                 setOrderHistory([]);
+                setSuccess('All order history deleted successfully.');
               } catch {
                 setError('Failed to delete order history.');
               } finally {
@@ -373,6 +390,7 @@ const Orders: React.FC = () => {
               }
             }
           }}
+          disabled={loading || orderHistory.length === 0}
         >
           x
         </button>
@@ -423,6 +441,28 @@ const Orders: React.FC = () => {
           </tbody>
         </table>
       )}
+      <div className="flex justify-end mt-4">
+        <button
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+          onClick={async () => {
+            setLoading(true);
+            setError('');
+            setSuccess('');
+            try {
+              await API.delete('/inventory/orders');
+              setOrderHistory([]);
+              setSuccess('All order history deleted successfully.');
+            } catch {
+              setError('Failed to delete order history.');
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading || orderHistory.length === 0}
+        >
+          Delete All Order History
+        </button>
+      </div>
     </div>
   );
 };
