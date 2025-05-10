@@ -20,7 +20,7 @@ const LoginRedirect = () => {
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+    <div className="min-h-screen bg-[#f0f1f5] font-sans text-gray-900">
       <Router>
         <Routes>
           {/* Public Route */}

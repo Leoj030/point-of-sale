@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchCategories } from '../api/category';
 import { createOrder, fetchOrders, updateOrderStatus } from '../api/order';
 import { fetchProducts } from '../api/product';
+import ProductCard from '../component/ProductCard';
 import { Category, OrderHistoryItem, OrderItem, Product } from '../types/order';
 
 const orderTypes = [
@@ -165,176 +166,163 @@ const Orders: React.FC = () => {
   };
 
   return (
-    <div className="border-4 p-4 border-[#f15734]">
-      <h1 className="text-2xl font-bold mb-4">Orders</h1>
-      {error && <div className="text-red-500 mb-2">{error}</div>}
-      {success && <div className="text-green-600 mb-2">{success}</div>}
-      <div className="mb-4 flex gap-2 flex-wrap">
+    <div className="border-4 p-4 border-[#f15734] flex gap-4">
+  <div className="flex-1">
+    <h1 className="text-2xl font-bold mb-4">Orders</h1>
+    {error && <div className="text-red-500 mb-2">{error}</div>}
+    {success && <div className="text-green-600 mb-2">{success}</div>}
+    <div className="mb-4 flex gap-2 flex-wrap">
+      <button
+        className={`px-3 py-1 rounded ${selectedCategory === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+        onClick={() => setSelectedCategory('all')}
+      >
+        All
+      </button>
+      {categories.map((cat) => (
         <button
-          className={`px-3 py-1 rounded ${selectedCategory === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setSelectedCategory('all')}
+          key={cat._id}
+          className={`px-3 py-1 rounded ${selectedCategory === cat._id ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          onClick={() => setSelectedCategory(cat._id)}
         >
-          All
+          {cat.name}
         </button>
-        {categories.map((cat) => (
-          <button
-            key={cat._id}
-            className={`px-3 py-1 rounded ${selectedCategory === cat._id ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => setSelectedCategory(cat._id)}
-          >
-            {cat.name}
-          </button>
-        ))}
-      </div>
-      <div className="flex gap-4 mb-8">
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {filteredProducts.map((product) => (
-            <div key={product._id} className="border rounded p-4 flex flex-col items-center">
-              <img src={product.imageUrl} alt={product.name} className="w-24 h-24 object-cover mb-2" />
-              <div className="font-bold">{product.name}</div>
-              <div className="text-gray-600 text-sm mb-2">{product.description}</div>
-              <div className="mb-2">₱{product.price}</div>
-              <div className={`text-sm mb-2 ${product.quantity > 0 ? 'text-green-600' : 'text-red-600 font-semibold'}`}>
-                {product.quantity > 0 ? `${product.quantity} available` : 'Out of Stock'}
-              </div>
-              <button
-                className={`text-white px-3 py-1 rounded ${product.quantity > 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'}`}
-                onClick={() => addToOrder(product)}
-                disabled={product.quantity === 0}
-              >
-                {product.quantity > 0 ? '+ Add' : 'Unavailable'}
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div className="w-full sm:w-1/3 md:w-1/4 bg-white rounded shadow p-4 overflow-auto">
-          <h2 className="text-lg font-bold mb-2">Order Summary</h2>
-          {orderItems.length === 0 ? (
-            <div className="text-gray-500">No items in order.</div>
-          ) : (
-            <table className="w-full mb-2">
-              <thead>
-                <tr>
-                  <th className="text-left">Product</th>
-                  <th>Qty</th>
-                  <th>Price</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderItems.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.productName}</td>
-                    <td>
-                      <button onClick={() => changeQuantity(item.id, -1)} className="px-2">-</button>
-                      {item.quantity}
-                      <button onClick={() => changeQuantity(item.id, 1)} className="px-2">+</button>
-                    </td>
-                    <td>₱{item.price * item.quantity}</td>
-                    <td>
-                      <button onClick={() => removeFromOrder(item.id)} className="text-red-500">x</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          <div className="mb-2">Total: <span className="font-bold">₱{total}</span></div>
-          <div className="mb-2 flex gap-2 flex-wrap">
-            <label>Order Type:
-              <select
-                className="ml-2 border rounded px-2 py-1"
-                value={orderType}
-                onChange={(e) => setOrderType(e.target.value)}
-              >
-                {orderTypes.map((type) => (
-                  <option key={type.value} value={type.value}>{type.label}</option>
-                ))}
-              </select>
-            </label>
-            <label>Payment:
-              <select
-                className="ml-2 border rounded px-2 py-1"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              >
-                {paymentMethods.map((pm) => (
-                  <option key={pm.value} value={pm.value}>{pm.label}</option>
-                ))}
-              </select>
-            </label>
-            <label>Status:
-              <select
-                className="ml-2 border rounded px-2 py-1"
-                value={orderStatus}
-                onChange={(e) => setOrderStatus(e.target.value)}
-              >
-                {orderStatusOptions.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded mt-2 w-full disabled:opacity-50"
-            onClick={handleCheckout}
-            disabled={orderItems.length === 0 || loading}
-          >
-            {loading ? 'Placing Order...' : 'Checkout'}
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-lg font-bold mb-2">Order History</h2>
-        {orderHistory.length === 0 ? (
-          <div className="text-gray-500">No orders yet.</div>
-        ) : (
-          <table className="w-full text-sm bg-white rounded shadow">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Status</th>
-                <th>Type</th>
-                <th>Payment</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Created</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orderHistory.map((order) => (
-                <tr key={order.orderId} className={order.status === 'Pending' ? 'bg-yellow-50' : ''}>
-                  <td>{order.orderId.slice(0, 8)}</td>
-                  <td>{order.status}</td>
-                  <td>{order.orderType}</td>
-                  <td>{order.paymentMethod}</td>
-                  <td>
-                    {order.items.map((item) => (
-                      <div key={item.id}>{item.productName} x{item.quantity}</div>
-                    ))}
-                  </td>
-                  <td>₱{order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)}</td>
-                  <td>{new Date(order.createdAt).toLocaleString()}</td>
-                  <td>
-                    {order.status === 'Pending' && (
-                      <button
-                        className="bg-green-500 text-white px-2 py-1 rounded"
-                        onClick={() => updateOrderStatusHandler(order.orderId, 'Completed')}
-                      >
-                        Complete
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      ))}
     </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+    {filteredProducts.map((product) => (
+  <ProductCard
+    key={product._id}
+    product={product}
+    itemInCart={orderItems.find((item) => item.id === product._id)}
+    addToOrder={addToOrder}
+    changeQuantity={changeQuantity}
+  />
+))}
+</div>
+
+    <div className="mt-8">
+      <h2 className="text-lg font-bold mb-2">Order History</h2>
+      {orderHistory.length === 0 ? (
+        <div className="text-gray-500">No orders yet.</div>
+      ) : (
+        <table className="w-full text-sm bg-white rounded shadow">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Status</th>
+              <th>Type</th>
+              <th>Payment</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Created</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orderHistory.map((order) => (
+              <tr key={order.orderId} className={order.status === 'Pending' ? 'bg-yellow-50' : ''}>
+                <td>{order.orderId.slice(0, 8)}</td>
+                <td>{order.status}</td>
+                <td>{order.orderType}</td>
+                <td>{order.paymentMethod}</td>
+                <td>
+                  {order.items.map((item) => (
+                    <div key={item.id}>{item.productName} x{item.quantity}</div>
+                  ))}
+                </td>
+                <td>₱{order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)}</td>
+                <td>{new Date(order.createdAt).toLocaleString()}</td>
+                <td>
+                  {order.status === 'Pending' && (
+                    <button
+                      className="bg-green-500 text-white px-2 py-1 rounded"
+                      onClick={() => updateOrderStatusHandler(order.orderId, 'Completed')}
+                    >
+                      Complete
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  </div>
+
+  {/* Cart Section */}
+  <div className="w-full sm:w-1/3 md:w-1/4 bg-white rounded shadow p-4 overflow-auto">
+    <h2 className="text-lg font-bold mb-2">Cart</h2>
+    {orderItems.length === 0 ? (
+      <div className="text-gray-700">No items in your cart.</div>
+    ) : (
+      <table className="w-full mb-2">
+        <thead>
+          <tr>
+            <th className="text-left">Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {orderItems.map((item) => (
+            <tr key={item.id}>
+              <td>{item.productName}</td>
+              <td>₱{item.price * item.quantity}</td>
+              <td>
+                <button onClick={() => removeFromOrder(item.id)} className="text-red-500">x</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+    <div className="mb-2">Total: <span className="font-bold">₱{total}</span></div>
+    <div className="mb-2 flex gap-2 flex-wrap">
+      <label>Order Type:
+        <select
+          className="ml-2 border rounded px-2 py-1"
+          value={orderType}
+          onChange={(e) => setOrderType(e.target.value)}
+        >
+          {orderTypes.map((type) => (
+            <option key={type.value} value={type.value}>{type.label}</option>
+          ))}
+        </select>
+      </label>
+      <label>Payment:
+        <select
+          className="ml-2 border rounded px-2 py-1"
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+        >
+          {paymentMethods.map((pm) => (
+            <option key={pm.value} value={pm.value}>{pm.label}</option>
+          ))}
+        </select>
+      </label>
+      <label>Status:
+        <select
+          className="ml-2 border rounded px-2 py-1"
+          value={orderStatus}
+          onChange={(e) => setOrderStatus(e.target.value)}
+        >
+          {orderStatusOptions.map((s) => (
+            <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
+        </select>
+      </label>
+    </div>
+    <button
+      className="bg-blue-600 text-white px-4 py-2 rounded mt-2 w-full disabled:opacity-50"
+      onClick={handleCheckout}
+      disabled={orderItems.length === 0 || loading}
+    >
+      {loading ? 'Placing Order...' : 'Checkout'}
+    </button>
+  </div>
+</div>
   );
 };
 
