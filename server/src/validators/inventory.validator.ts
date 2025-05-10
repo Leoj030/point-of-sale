@@ -46,7 +46,7 @@ export const validateCreateProduct = [
         .isFloat({ gt: 0 }).withMessage('Price must be a positive number.'),
     body('imageUrl')
         .trim()
-        .notEmpty().withMessage('Image path is required.'),
+        .isURL().withMessage('Invalid Image URL format.'),
     body('category')
         .notEmpty().withMessage('Category ID is required.')
         .isMongoId().withMessage('Invalid Category ID format.')
@@ -73,7 +73,7 @@ export const validateUpdateProduct = [
     body('imageUrl')
         .optional()
         .trim()
-        .notEmpty().withMessage('Image path cannot be empty if provided.'),
+        .isURL().withMessage('Invalid Image URL format if provided.'),
     body('category')
         .optional()
         .isMongoId().withMessage('Invalid Category ID format if provided.')

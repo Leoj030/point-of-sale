@@ -5,9 +5,6 @@ import { OrderItemSnapshot } from '../interfaces/order.js';
 export interface IOrder extends Document {
     orderId: string;
     items: OrderItemSnapshot[];
-    totalAmount: number;
-    amountPaid: number;
-    changeGiven: number;
     orderType: OrderType;
     paymentMethod: PaymentMethod;
     status: OrderStatus;
@@ -26,9 +23,6 @@ const OrderItemSnapshotSchema = new Schema<OrderItemSnapshot>({
 const OrderSchema = new Schema<IOrder>({
     orderId: { type: String, required: true, unique: true },
     items: { type: [OrderItemSnapshotSchema], required: true },
-    totalAmount: { type: Number, required: true },
-    amountPaid: { type: Number, required: true },
-    changeGiven: { type: Number, required: true },
     orderType: { type: String, enum: Object.values(OrderType), required: true },
     paymentMethod: { type: String, enum: Object.values(PaymentMethod), required: true },
     status: { type: String, enum: Object.values(OrderStatus), default: OrderStatus.Pending },

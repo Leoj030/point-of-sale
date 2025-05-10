@@ -10,9 +10,6 @@ import Login from './pages/Login';
 import Orders from './pages/Orders';
 import Products from './pages/Products';
 import Staff from './pages/Staff';
-import OrdersHistory from './pages/OrdersHistory';
-import ReceiptView from './pages/ReceiptView';
-import Categories from './pages/Categories';
 
 import './index.css';
 
@@ -51,41 +48,11 @@ function App() {
             }
           />
           <Route
-            path="/categories"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Categories />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/orders"
             element={
               <ProtectedRoute>
                 <Layout>
                   <Orders />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/orders/history"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <OrdersHistory />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/receipt/:orderId"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <ReceiptView />
                 </Layout>
               </ProtectedRoute>
             }

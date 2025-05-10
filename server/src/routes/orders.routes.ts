@@ -4,12 +4,10 @@ import {
     getOrders,
     getOrderById,
     updateOrderStatus,
-    deleteOrder,
-    deleteAllOrders // <-- import the new controller
+    deleteOrder
 } from '../controllers/inventory/order.controller.js';
 import { createOrderValidator, updateOrderStatusValidator } from '../validators/order.validator.js';
-import { checkRole, isAuthenticated } from '../middleware/auth.middleware.js';
-import roles from '../enums/roles.js';
+import { isAuthenticated } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -20,8 +18,6 @@ router.post('/', createOrderValidator, createOrder);
 router.get('/', getOrders);
 router.get('/:orderId', getOrderById);
 router.put('/:orderId/status', updateOrderStatusValidator, updateOrderStatus);
-
 router.delete('/:orderId', deleteOrder);
-router.delete('/', checkRole(roles.ADMIN), deleteAllOrders); // Add this route for deleting all orders
 
 export default router;
