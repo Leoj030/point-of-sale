@@ -1,7 +1,7 @@
-// Category, Product, OrderItem, OrderHistoryItem interfaces
 export interface Category {
   _id: string;
   name: string;
+  imageUrl: string; // Added imageUrl for category images
 }
 
 export interface Product {

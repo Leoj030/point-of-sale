@@ -7,7 +7,7 @@ const Categories: React.FC = () => {
   const [, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '' });
+  const [form, setForm] = useState({ name: '', imageUrl: '' });
   const [isEdit, setIsEdit] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
 
@@ -57,14 +57,14 @@ const Categories: React.FC = () => {
   };
 
   const handleEdit = (category: Category) => {
-    setForm({ name: category.name });
+    setForm({ name: category.name, imageUrl: category.imageUrl || '' });
     setEditId(category._id);
     setIsEdit(true);
     setShowForm(true);
   };
 
   const resetForm = () => {
-    setForm({ name: '' });
+    setForm({ name: '', imageUrl: '' });
     setEditId(null);
     setIsEdit(false);
   };
@@ -101,9 +101,19 @@ const Categories: React.FC = () => {
               <input
                 type="text"
                 value={form.name}
-                onChange={(e) => setForm({ name: e.target.value })}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="mt-1 block w-full border rounded px-3 py-2"
                 required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Image URL / Path</label>
+              <input
+                type="text"
+                value={form.imageUrl}
+                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                className="mt-1 block w-full border rounded px-3 py-2"
+                placeholder="e.g. ../images/category1.png"
               />
             </div>
             <div className="flex justify-end space-x-2">

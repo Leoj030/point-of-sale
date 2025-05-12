@@ -13,7 +13,10 @@ export const validateCreateCategory = [
             if (existingCategory) {
                 return Promise.reject('Category name already exists.');
             }
-        })
+        }),
+    body('imageUrl')
+        .trim()
+        .notEmpty().withMessage('Image path is required.'),
 ];
 
 export const validateUpdateCategory = [
@@ -30,7 +33,10 @@ export const validateUpdateCategory = [
             if (existingCategory) {
                 return Promise.reject('Another category with this name already exists.');
             }
-        })
+        }),
+    body('imageUrl')
+        .trim()
+        .notEmpty().withMessage('Image path is required.'),
 ];
 
 // --- Product Validations --- \\

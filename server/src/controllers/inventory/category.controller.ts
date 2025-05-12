@@ -22,9 +22,9 @@ export const getCategories = async (req: Request, res: Response): Promise<void> 
 
 export const createCategory = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name } = req.body;
+        const { name, imageUrl } = req.body;
 
-        const newCategory = await Category.create({ name });
+        const newCategory = await Category.create({ name, imageUrl });
 
         res.status(201).json(successResponse("Category created successfully", newCategory));
     } catch (error) {
@@ -42,11 +42,11 @@ export const createCategory = async (req: Request, res: Response): Promise<void>
 export const updateCategory = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
-        const { name } = req.body;
+        const { name, imageUrl } = req.body;
 
         const updatedCategory = await Category.findByIdAndUpdate(
             id,
-            { name },
+            { name, imageUrl },
             { new: true, runValidators: true }
         );
 
