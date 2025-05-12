@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { OrderStatus, OrderType, PaymentMethod } from '../enums/status.js';
+import { OrderType, PaymentMethod } from '../enums/status.js';
 import { OrderItemSnapshot } from '../interfaces/order.js';
 
 export interface IOrder extends Document {
@@ -10,7 +10,6 @@ export interface IOrder extends Document {
     changeGiven: number;
     orderType: OrderType;
     paymentMethod: PaymentMethod;
-    status: OrderStatus;
     createdBy: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
@@ -31,7 +30,6 @@ const OrderSchema = new Schema<IOrder>({
     changeGiven: { type: Number, required: true },
     orderType: { type: String, enum: Object.values(OrderType), required: true },
     paymentMethod: { type: String, enum: Object.values(PaymentMethod), required: true },
-    status: { type: String, enum: Object.values(OrderStatus), default: OrderStatus.Pending },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 

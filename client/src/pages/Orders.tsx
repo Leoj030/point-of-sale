@@ -1,8 +1,9 @@
 import { Coffee, DollarSign, ShoppingCart, Truck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import API from '../api/axios';
 import { fetchCategories } from '../api/category';
-import { createOrder, fetchOrders, updateOrderStatus } from '../api/order';
+import { createOrder, fetchOrders } from '../api/order';
 import { fetchProducts } from '../api/product';
 import OrderSummary from '../component/OrderSummary';
 import { Category, OrderHistoryItem, OrderItem, Product } from '../types/order';
@@ -11,7 +12,6 @@ interface CreateOrderPayload {
   items: OrderItem[];
   orderType: string;
   paymentMethod: string;
-  status: string;
   amountPaid: number;
 }
 
@@ -23,6 +23,7 @@ const orderTypes = [
 
 const paymentMethods = [
   { value: 'Cash', label: 'Cash', icon: <DollarSign /> },
+  { value: 'GCash', label: 'GCash', icon: <DollarSign /> },
 ];
 
 const Orders: React.FC = () => {
@@ -30,15 +31,16 @@ const Orders: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [orderType, setOrderType] = useState(orderTypes[0].value);
-  const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].value);
+  const [orderType, setOrderType] = useState('Dine In');
+  const [paymentMethod, setPaymentMethod] = useState('Cash');
   const [orderHistory, setOrderHistory] = useState<OrderHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [amountPaid, setAmountPaid] = useState<string>('');
-  const [changeGiven, setChangeGiven] = useState<number | null>(null);
+  const [, setChangeGiven] = useState<number | null>(null);
   const [lastCompletedOrder, setLastCompletedOrder] = useState<{ id: string; change: number } | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -156,7 +158,6 @@ const Orders: React.FC = () => {
         items: orderItems,
         orderType,
         paymentMethod,
-        status: 'Completed', 
         amountPaid: parseFloat(amountPaid),
       } as CreateOrderPayload);
       
@@ -203,17 +204,8 @@ const Orders: React.FC = () => {
     }
   };
 
-  const updateOrderStatusHandler = async (orderId: string, newStatus: string) => {
-    setLoading(true);
-    setError('');
-    try {
-      await updateOrderStatus(orderId, newStatus);
-      const orderRes = await fetchOrders();
-      setOrderHistory(orderRes || []);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to update order status');
-    }
-    setLoading(false);
+  const handleViewReceipt = (orderId: string) => {
+    navigate(`/receipt/${orderId}`);
   };
 
 return (
@@ -299,37 +291,15 @@ return (
           changeQuantity={changeQuantity}
           removeFromOrder={removeFromOrder}
           handleCheckout={handleCheckout}
+          showReceiptButton={!!lastCompletedOrder}
+          onViewReceipt={() => lastCompletedOrder && handleViewReceipt(lastCompletedOrder.id)}
         />
       </div>
     </div>
 
     {/* Bottom Section: Order History */}
     <div className="mt-8">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-bold">Order History</h2>
-        <button
-          title="Delete Order History"
-          onClick={async () => {
-            if (window.confirm('Are you sure you want to delete all order history? This action cannot be undone.')) {
-              try {
-                setLoading(true);
-                setError('');
-                await API.delete('/inventory/orders');
-                setOrderHistory([]);
-                setSuccess('All order history deleted successfully.');
-              } catch {
-                setError('Failed to delete order history.');
-              } finally {
-                setLoading(false);
-              }
-            }
-          }}
-          disabled={loading || orderHistory.length === 0}
-          className="text-red-600 text-xl font-bold hover:text-red-800"
-        >
-          ×
-        </button>
-      </div>
+      
 
       {orderHistory.length === 0 ? (
         <div className="text-gray-500">No orders yet.</div>
@@ -343,6 +313,7 @@ return (
               <th>Items</th>
               <th>Total</th>
               <th>Created</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -358,6 +329,14 @@ return (
                 </td>
                 <td>₱{order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)}</td>
                 <td>{new Date(order.createdAt).toLocaleString()}</td>
+                <td>
+                  <button
+                    onClick={() => handleViewReceipt(order.orderId)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                  >
+                    View Receipt
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -372,7 +351,7 @@ return (
               setLoading(true);
               setError('');
               setSuccess('');
-              await API.delete('/inventory/orders');
+              await API.delete('/orders');
               setOrderHistory([]);
               setSuccess('All order history deleted successfully.');
             } catch {

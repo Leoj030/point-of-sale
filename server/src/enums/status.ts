@@ -5,12 +5,6 @@ enum Status {
 
 export default Status;
 
-export enum OrderStatus {
-    Pending = 'Pending',
-    Completed = 'Completed',
-    Cancelled = 'Cancelled',
-}
-
 export enum OrderType {
     DineIn = 'Dine In',
     TakeOut = 'Take Out',
@@ -19,4 +13,5 @@ export enum OrderType {
 
 export enum PaymentMethod {
     Cash = 'Cash',
+    GCash = 'GCash',
 }

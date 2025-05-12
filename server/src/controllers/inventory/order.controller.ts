@@ -4,13 +4,15 @@ import Product from '../../models/product.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import { successResponse, errorResponse } from '../../utils/apiResponse.js';
 import { validationResult } from 'express-validator';
-import { OrderStatus } from '../../enums/status.js';
+
 import { AuthenticatedRequest } from '../../interfaces/authMiddleware.js';
 import { OrderItemSnapshot } from '../../interfaces/order.js';
 
 // Define interface for incoming request items
 interface RequestItem {
     id: string;
+    productName: string;
+    price: number;
     quantity: number;
 }
 
@@ -49,11 +51,11 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
                 return;
             }
 
-            totalAmount += product.price * item.quantity;
+            totalAmount += item.price * item.quantity;
             orderItemsSnapshots.push({
-                id: product._id.toString(),
-                productName: product.name,
-                price: product.price,
+                id: item.id,
+                productName: item.productName,
+                price: item.price,
                 quantity: item.quantity,
             });
         }
@@ -87,11 +89,9 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
             changeGiven, 
             orderType,
             paymentMethod,
-            status: OrderStatus.Pending, 
             createdBy: req.user._id,
         });
 
-        // Construct the specific response data expected by the frontend
         const responseData = {
             orderId: order.orderId, 
             changeGiven: order.changeGiven
@@ -138,29 +138,6 @@ export const getOrderById = async (req: AuthenticatedRequest, res: Response): Pr
         // @ts-expect-error: __v may not be optional, but we want to remove it for the response
         delete orderWithoutMongoId.__v;
         res.json(successResponse('Order fetched', orderWithoutMongoId));
-    } catch (err) {
-        res.status(500).json(errorResponse('Server error', err));
-    }
-};
-
-export const updateOrderStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        res.status(400).json(errorResponse('Validation failed', errors.array()));
-        return;
-    }
-    try {
-        const { status } = req.body;
-        const order = await Order.findOneAndUpdate(
-            { orderId: req.params.orderId },
-            { status },
-            { new: true }
-        );
-        if (!order) {
-            res.status(404).json(errorResponse('Order not found'));
-            return;
-        }
-        res.json(successResponse('Order status updated', order));
     } catch (err) {
         res.status(500).json(errorResponse('Server error', err));
     }

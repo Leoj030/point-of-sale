@@ -6,7 +6,6 @@ import { Category, Product } from '../types/order';
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -22,15 +21,12 @@ const Products: React.FC = () => {
   });
 
   const fetchProductsData = async () => {
-    setLoading(true);
     setError('');
     try {
       const data = await fetchProducts();
       setProducts(data);
     } catch {
       setError('Failed to load products');
-    } finally {
-      setLoading(false);
     }
   };
 

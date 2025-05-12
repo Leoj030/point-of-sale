@@ -4,7 +4,7 @@ import { Category } from '../types/order';
 
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '' });
@@ -17,8 +17,8 @@ const Categories: React.FC = () => {
     try {
       const data = await fetchCategories();
       setCategories(data);
-    } catch (err) {
-      setError('Failed to load categories');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to load categories');
     } finally {
       setLoading(false);
     }
@@ -63,6 +63,12 @@ const Categories: React.FC = () => {
     setShowForm(true);
   };
 
+  const resetForm = () => {
+    setForm({ name: '' });
+    setEditId(null);
+    setIsEdit(false);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Categories</h1>
@@ -73,7 +79,7 @@ const Categories: React.FC = () => {
             setShowForm(true);
             setIsEdit(false);
             setEditId(null);
-            setForm({ name: '' });
+            resetForm();
           }}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
@@ -90,12 +96,12 @@ const Categories: React.FC = () => {
       {showForm && (
         <div className="mb-4 p-4 bg-white rounded shadow">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Name</label>
               <input
                 type="text"
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) => setForm({ name: e.target.value })}
                 className="mt-1 block w-full border rounded px-3 py-2"
                 required
               />

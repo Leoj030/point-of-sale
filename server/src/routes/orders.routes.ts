@@ -3,11 +3,10 @@ import {
     createOrder,
     getOrders,
     getOrderById,
-    updateOrderStatus,
     deleteOrder,
     deleteAllOrders // <-- import the new controller
 } from '../controllers/inventory/order.controller.js';
-import { createOrderValidator, updateOrderStatusValidator } from '../validators/order.validator.js';
+import { createOrderValidator } from '../validators/order.validator.js';
 import { checkRole, isAuthenticated } from '../middleware/auth.middleware.js';
 import roles from '../enums/roles.js';
 
@@ -19,7 +18,6 @@ router.use(isAuthenticated);
 router.post('/', createOrderValidator, createOrder);
 router.get('/', getOrders);
 router.get('/:orderId', getOrderById);
-router.put('/:orderId/status', updateOrderStatusValidator, updateOrderStatus);
 
 router.delete('/:orderId', deleteOrder);
 router.delete('/', checkRole(roles.ADMIN), deleteAllOrders); // Add this route for deleting all orders

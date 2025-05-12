@@ -1,4 +1,4 @@
-import { OrderType, PaymentMethod, OrderStatus } from '../enums/status.js';
+import { OrderType, PaymentMethod } from '../enums/status.js';
 
 export interface OrderItemSnapshot {
     id: string;
@@ -12,7 +12,6 @@ export interface Order {
     items: OrderItemSnapshot[];
     orderType: OrderType;
     paymentMethod: PaymentMethod;
-    status: OrderStatus;
     createdBy: string; // user id
     createdAt: Date;
     updatedAt: Date;

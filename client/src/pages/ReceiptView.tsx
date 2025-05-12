@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../api/axios';
-import { updateOrderStatus } from '../api/order';
+
 
 interface OrderItemSnapshot {
   productId: string;
@@ -40,24 +40,10 @@ const ReceiptView: React.FC = () => {
       if (!orderId) return;
       setLoading(true);
       try {
-        const response = await API.get<ApiResponse<ReceiptData>>(`/receipts/${orderId}`);
+        const response = await API.get<ApiResponse<ReceiptData>>(`/orders/${orderId}`);
         if (response.data && response.data.success && response.data.data) {
           setReceipt(response.data.data);
           setError(null);
-          
-          if (response.data.data.status === 'Pending') {
-            try {
-              
-              const updateResponse = await updateOrderStatus(orderId, 'Completed'); 
-              if (!updateResponse.success) {
-                
-                console.warn('Failed to update order status to Completed:', updateResponse.message);
-                
-              }
-            } catch (statusUpdateError) {
-              console.error('Error updating order status:', statusUpdateError);
-            }
-          }
         } else {
           setError(response.data?.message || 'Failed to fetch receipt data.');
           setReceipt(null);

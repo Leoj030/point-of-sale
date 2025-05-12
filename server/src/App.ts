@@ -10,6 +10,7 @@ import seedRoles from './config/seedRoles.js';
 import seedStatus from './config/seedStatus.js';
 import userRoutes from './routes/user.routes.js';
 import salesReportRoutes from './routes/salesReport.routes.js';
+import ordersRoutes from './routes/orders.routes.js';
 
 const app = express();
 
@@ -33,5 +34,6 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/receipts', receiptRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/reports/sales', salesReportRoutes);
+app.use('/api/orders', ordersRoutes);
 
 export default app;

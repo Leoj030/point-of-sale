@@ -7,31 +7,30 @@ export const validateCreateCategory = [
     body('name')
         .trim()
         .notEmpty().withMessage('Category name is required.')
-        .isLength({ min: 2 }).withMessage('Category name must be at least 2 characters long.')
+        .isLength({ min: 2, max: 50 }).withMessage('Category name must be between 2 and 50 characters long.')
         .custom(async (name) => {
             const existingCategory = await Category.findOne({ name });
             if (existingCategory) {
                 return Promise.reject('Category name already exists.');
             }
-        }),
+        })
 ];
 
 export const validateUpdateCategory = [
     body('name')
-    .trim()
-    .notEmpty().withMessage('Category name is required.')
-    .isLength({ min: 2 }).withMessage('Category name must be at least 2 characters long.')
-    .custom(async (name, { req }) => {
-            
-        const categoryId = req.params?.id;
-        if (!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)) {
-            return true;
-        }
-        const existingCategory = await Category.findOne({ name, _id: { $ne: categoryId } });
-        if (existingCategory) {
-            return Promise.reject('Another category with this name already exists.');
-        }
-    }),
+        .trim()
+        .notEmpty().withMessage('Category name is required.')
+        .isLength({ min: 2 }).withMessage('Category name must be at least 2 characters long.')
+        .custom(async (name, { req }) => {
+            const categoryId = req.params?.id;
+            if (!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)) {
+                return true;
+            }
+            const existingCategory = await Category.findOne({ name, _id: { $ne: categoryId } });
+            if (existingCategory) {
+                return Promise.reject('Another category with this name already exists.');
+            }
+        })
 ];
 
 // --- Product Validations --- \\

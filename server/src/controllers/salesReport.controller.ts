@@ -5,8 +5,7 @@ import { startOfDay, startOfWeek, startOfMonth, endOfDay, endOfWeek, endOfMonth 
 
 const getTotalSales = async (start: Date, end: Date) => {
     const orders = await Order.find({
-        createdAt: { $gte: start, $lte: end },
-        status: 'Completed',
+        createdAt: { $gte: start, $lte: end }
     });
     return orders.reduce((sum, order) => {
         return sum + order.items.reduce((itemSum, item) => itemSum + (item.price * item.quantity), 0);
