@@ -8,6 +8,7 @@ const categorySchema: Schema<ICategory> = new Schema({
         unique: true,
         trim: true,
     },
+    imageUrl: String
 }, 
 {
     timestamps: true,
