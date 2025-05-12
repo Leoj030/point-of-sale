@@ -1,5 +1,5 @@
 import { body } from 'express-validator';
-import { OrderType, PaymentMethod, OrderStatus } from '../enums/status.js';
+import { OrderType, PaymentMethod } from '../enums/status.js';
 
 export const createOrderValidator = [
     body('items')
@@ -15,10 +15,4 @@ export const createOrderValidator = [
     body('paymentMethod')
         .isIn(Object.values(PaymentMethod))
         .withMessage('Invalid payment method'),
-];
-
-export const updateOrderStatusValidator = [
-    body('status')
-        .isIn(Object.values(OrderStatus))
-        .withMessage('Invalid order status'),
 ];

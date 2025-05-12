@@ -22,7 +22,7 @@ export default function IconButtonGroup({ value, onChange, options }: IconButton
             key={opt.value}
             onClick={() => onChange(opt.value)}
             className={clsx(
-              "flex flex-col items-center pt-4 w-20 h-20 px-3 py-2 rounded-lg transition drop-shadow-lg",
+              "flex flex-col items-center justify-center w-24 h-20 px-2 py-2 rounded-lg transition drop-shadow-lg whitespace-nowrap",
               value === opt.value
                 ? "bg-[#f15734] text-white border-[#f15734]"
                 : "bg-white text-gray-600 hover:bg-[#fcefe9] hover:border-[#f15734] hover:text-[#f15734]"

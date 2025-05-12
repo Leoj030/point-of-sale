@@ -1,17 +1,17 @@
-import { HandCoins, Minus, Plus, ShoppingBag, Smartphone, Trash2, Truck, Utensils } from 'lucide-react';
+import { HandCoins, Minus, Plus, Receipt, ShoppingBag, Smartphone, Trash2, Truck, Utensils } from 'lucide-react';
+import clsx from 'clsx';
 import React from 'react';
 import { OrderItem } from '../types/order';
-import IconButtonGroup from './IconButtonGroup';
 
 const orderTypeOptions = [
-  { value: 'dine-in', label: 'Dine-In', icon: <Utensils className="w-7 h-7" strokeWidth={1.5} /> },
-  { value: 'take-out', label: 'To-Go', icon: <ShoppingBag className="w-7 h-7" strokeWidth={1.5} /> },
-  { value: 'delivery', label: 'Delivery', icon: <Truck className="w-7 h-7" strokeWidth={1.5}  /> },
+  { value: 'Dine In', label: 'Dine In', icon: <Utensils className="w-7 h-7" strokeWidth={1.5} /> },
+  { value: 'Take Out', label: 'Take Out', icon: <ShoppingBag className="w-7 h-7" strokeWidth={1.5} /> },
+  { value: 'Delivery', label: 'Delivery', icon: <Truck className="w-7 h-7" strokeWidth={1.5}  /> },
 ];
 
 const paymentMethodOptions = [
-  { value: 'cash', label: 'Cash', icon: <HandCoins className="w-7 h-7" strokeWidth={1.5}/> },
-  { value: 'gcash', label: 'GCash', icon: <Smartphone className="w-7 h-7" strokeWidth={1.5} /> },
+  { value: 'Cash', label: 'Cash', icon: <HandCoins className="w-7 h-7" strokeWidth={1.5}/> },
+  { value: 'GCash', label: 'GCash', icon: <Smartphone className="w-7 h-7" strokeWidth={1.5} /> },
 ];
 
 interface Props {
@@ -28,6 +28,8 @@ interface Props {
   changeQuantity: (id: string, delta: number) => void;
   removeFromOrder: (id: string) => void;
   handleCheckout: () => void;
+  showReceiptButton: boolean;
+  onViewReceipt: () => void;
 }
 
 const OrderSummary: React.FC<Props> = ({
@@ -36,24 +38,39 @@ const OrderSummary: React.FC<Props> = ({
   paymentMethod,
   amountPaid,
   total,
-  orderTypes,
-  paymentMethods,
+
   setOrderType,
   setPaymentMethod,
   setAmountPaid,
   changeQuantity,
   removeFromOrder,
   handleCheckout,
+  showReceiptButton,
+  onViewReceipt,
 }) => {
   return (
     <div className="w-[307.5px] bg-white rounded shadow p-4 overflow-y-auto max-h-[90vh] absolute top-0 right-0">
       <h2 className="text-2xl font-bold mb-2">Order Summary</h2>
 
-      <IconButtonGroup
-        value={orderType}
-        onChange={setOrderType}
-        options={orderTypeOptions}
-      />
+      <div className="mb-4">
+        <div className="flex justify-between gap-1">
+          {orderTypeOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setOrderType(opt.value)}
+              className={clsx(
+                "flex-1 flex flex-col items-center justify-center h-20 rounded-lg transition drop-shadow-lg whitespace-nowrap text-sm px-1",
+                orderType === opt.value
+                  ? "bg-[#f15734] text-white"
+                  : "bg-white text-gray-600 hover:bg-[#fcefe9] hover:text-[#f15734]"
+              )}
+            >
+              <div className="mb-1">{opt.icon}</div>
+              <span className="text-center">{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       {orderItems.length === 0 ? (
       <div className="text-gray-500">No items in order.</div>
@@ -103,11 +120,25 @@ const OrderSummary: React.FC<Props> = ({
         <span className="font-bold">₱{total.toFixed(2)}</span>
       </div>
 
-      <IconButtonGroup
-        value={paymentMethod}
-        onChange={setPaymentMethod}
-        options={paymentMethodOptions}
-      />
+      <div className="mb-4">
+        <div className="flex justify-between gap-1">
+          {paymentMethodOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setPaymentMethod(opt.value)}
+              className={clsx(
+                "flex-1 flex flex-col items-center justify-center h-20 rounded-lg transition drop-shadow-lg whitespace-nowrap text-sm px-1",
+                paymentMethod === opt.value
+                  ? "bg-[#f15734] text-white"
+                  : "bg-white text-gray-600 hover:bg-[#fcefe9] hover:text-[#f15734]"
+              )}
+            >
+              <div className="mb-1">{opt.icon}</div>
+              <span className="text-center">{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="mt-4">
         <label htmlFor="amountPaid" className="block text-sm font-medium text-gray-700">Amount Paid:</label>
@@ -123,9 +154,20 @@ const OrderSummary: React.FC<Props> = ({
       <button
         onClick={handleCheckout}
         className="w-full mt-2 py-2 bg-[#fcefe9] text-[#f15734] border border-[#f15734] font-bold rounded-lg hover:bg-[#f15734] hover:text-white transition"
+        disabled={orderItems.length === 0}
       >
         Checkout
       </button>
+
+      {showReceiptButton && (
+        <button
+          onClick={onViewReceipt}
+          className="w-full mt-2 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition flex items-center justify-center gap-2"
+        >
+          <Receipt className="w-5 h-5" />
+          View Receipt
+        </button>
+      )}
     </div>
   );
 };

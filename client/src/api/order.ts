@@ -12,7 +12,6 @@ interface CreateOrderPayload {
   items: OrderItem[];
   orderType: string;
   paymentMethod: string;
-  status: string;
   amountPaid: number;
 }
 
@@ -22,7 +21,7 @@ interface OrderCreationResponse {
 }
 
 export const fetchOrders = async (): Promise<OrderHistoryItem[]> => {
-  const res = await API.get<{ data: OrderHistoryItem[] }>('/inventory/orders');
+  const res = await API.get<{ data: OrderHistoryItem[] }>('/orders');
   return res.data.data || [];
 };
 
@@ -30,7 +29,7 @@ export const createOrder = async (
   orderData: CreateOrderPayload
 ): Promise<ApiResponse<OrderCreationResponse>> => {
   try {
-    const response = await API.post<ApiResponse<OrderCreationResponse>>('/inventory/orders', orderData);
+    const response = await API.post<ApiResponse<OrderCreationResponse>>('/orders', orderData);
     return response.data;
   } catch (error: unknown) {
     let message = 'An unexpected error occurred during order creation.';
@@ -54,12 +53,12 @@ export const createOrder = async (
   }
 };
 
-export const updateOrderStatus = async (orderId: string, status: string): Promise<ApiResponse<null>> => {
+export const deleteOrder = async (orderId: string): Promise<ApiResponse<null>> => {
   try {
-    const response = await API.put<ApiResponse<null>>(`/inventory/orders/${orderId}/status`, { status });
+    const response = await API.delete<ApiResponse<null>>(`/orders/${orderId}`);
     return response.data;
-  } catch (error: unknown) { // Typed as unknown
-    let message = 'An unexpected error occurred while updating order status.';
+  } catch (error: unknown) {
+    let message = 'An unexpected error occurred while deleting the order.';
     let errorData: unknown = error;
 
     if (typeof error === 'object' && error !== null) {

@@ -6,7 +6,11 @@ export const fetchCategories = async (): Promise<Category[]> => {
   return res.data.data || [];
 };
 
-export const createCategory = async (data: { name: string }): Promise<Category> => {
+export interface CreateCategoryData {
+  name: string;
+}
+
+export const createCategory = async (data: CreateCategoryData): Promise<Category> => {
   const res = await API.post<{ data: Category }>('/inventory/categories', data);
   return res.data.data;
 };
