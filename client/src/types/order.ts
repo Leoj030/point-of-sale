@@ -26,7 +26,6 @@ export interface OrderHistoryItem {
   items: OrderItem[];
   orderType: string;
   paymentMethod: string;
-  status: string;
   createdAt: string;
   updatedAt: string;
   createdBy?: { username: string } | string;

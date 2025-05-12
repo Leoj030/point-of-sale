@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import API from '../api/axios';
 
 interface ApiResponse<T> {
     success: boolean;
     message: string;
     data?: T;
-    error?: unknown; 
+    error?: unknown;
 }
 
 interface OrderItem {
@@ -25,9 +25,9 @@ interface Order {
     orderType: string;
     paymentMethod: string;
     status: string; 
-    createdBy: { username: string }; 
-    createdAt: string; 
-    updatedAt: string; 
+    createdBy: { username: string };
+    createdAt: string;
+    updatedAt: string;
 }
 
 const OrdersHistory: React.FC = () => {
