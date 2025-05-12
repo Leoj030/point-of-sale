@@ -1,9 +1,11 @@
+import { Coffee, DollarSign, ShoppingCart, Truck } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { fetchCategories } from '../api/category';
-import { fetchProducts } from '../api/product';
-import { fetchOrders, createOrder, updateOrderStatus } from '../api/order';
-import { Category, Product, OrderItem, OrderHistoryItem } from '../types/order';
 import API from '../api/axios';
+import { fetchCategories } from '../api/category';
+import { createOrder, fetchOrders, updateOrderStatus } from '../api/order';
+import { fetchProducts } from '../api/product';
+import OrderSummary from '../component/OrderSummary';
+import { Category, OrderHistoryItem, OrderItem, Product } from '../types/order';
 
 interface CreateOrderPayload {
   items: OrderItem[];
@@ -14,19 +16,13 @@ interface CreateOrderPayload {
 }
 
 const orderTypes = [
-  { value: 'Dine In', label: 'Dine In' },
-  { value: 'Take Out', label: 'Take Out' },
-  { value: 'Delivery', label: 'Delivery' },
+  { value: 'Dine In', label: 'Dine In', icon: <Coffee /> },
+  { value: 'Take Out', label: 'Take Out', icon: <ShoppingCart /> },
+  { value: 'Delivery', label: 'Delivery', icon: <Truck /> },
 ];
 
 const paymentMethods = [
-  { value: 'Cash', label: 'Cash' },
-  // Add more in the future
-];
-
-const orderStatusOptions = [
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Completed', label: 'Completed' },
+  { value: 'Cash', label: 'Cash', icon: <DollarSign /> },
 ];
 
 const Orders: React.FC = () => {
@@ -36,14 +32,13 @@ const Orders: React.FC = () => {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [orderType, setOrderType] = useState(orderTypes[0].value);
   const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].value);
-  const [orderStatus, setOrderStatus] = useState(orderStatusOptions[0].value);
   const [orderHistory, setOrderHistory] = useState<OrderHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [amountPaid, setAmountPaid] = useState<string>(''); 
-  const [changeGiven, setChangeGiven] = useState<number | null>(null); 
-  const [lastCompletedOrder, setLastCompletedOrder] = useState<{ id: string; change: number } | null>(null); 
+  const [amountPaid, setAmountPaid] = useState<string>('');
+  const [changeGiven, setChangeGiven] = useState<number | null>(null);
+  const [lastCompletedOrder, setLastCompletedOrder] = useState<{ id: string; change: number } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,7 +72,6 @@ const Orders: React.FC = () => {
       return;
     }
 
-    // Update the product quantity immediately
     setProducts(prevProducts => 
       prevProducts.map(p => 
         p._id === product._id 
@@ -222,158 +216,98 @@ const Orders: React.FC = () => {
     setLoading(false);
   };
 
-  return (
-    <div className="border-4 p-4 border-[#f15734]">
-      <h1 className="text-2xl font-bold mb-4">Orders</h1>
-      {error && <div className="text-red-500 mb-2">{error}</div>}
-      {success && <div className="text-green-600 mb-2">{success}</div>}
-      <div className="mb-4 flex gap-2 flex-wrap">
-        <button
-          className={`px-3 py-1 rounded ${selectedCategory === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setSelectedCategory('all')}
-        >
-          All
-        </button>
-        {categories.map((cat) => (
+return (
+  <div className="p-4">
+    {/* Top Section: Products + OrderSummary */}
+    <div className="flex flex-col md:flex-row gap-4 mb-8">
+      {/* LEFT: Products and Categories */}
+      <div className="flex-1 min-w-0">
+        <h1 className="text-2xl font-bold mb-4">Orders</h1>
+        <div className="mb-4 flex gap-2 flex-wrap">
           <button
-            key={cat._id}
-            className={`px-3 py-1 rounded ${selectedCategory === cat._id ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => setSelectedCategory(cat._id)}
+            className={`px-3 py-1 rounded ${selectedCategory === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => setSelectedCategory('all')}
           >
-            {cat.name}
+            All
           </button>
-        ))}
-      </div>
-      <div className="flex gap-4 mb-8">
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {categories.map((cat) => (
+            <button
+              key={cat._id}
+              className={`px-3 py-1 rounded ${selectedCategory === cat._id ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              onClick={() => setSelectedCategory(cat._id)}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+        {error && <div className="text-red-500 mb-2">{error}</div>}
+        {success && <div className="text-green-600 mb-2">{success}</div>}
+
+        {/* Product Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
-            <div key={product._id} className="border rounded p-4 flex flex-col items-center">
-              <img src={product.imageUrl} alt={product.name} className="w-24 h-24 object-cover mb-2" />
-              <div className="font-bold">{product.name}</div>
-              <div className="text-gray-600 text-sm mb-2">{product.description}</div>
-              <div className="mb-2">₱{product.price}</div>
-              <div className={`text-sm mb-2 ${product.quantity > 0 ? 'text-green-600' : 'text-red-600 font-semibold'}`}>
-                {product.quantity > 0 ? `${product.quantity} available` : 'Out of Stock'}
+            <div
+              key={product._id}
+              className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden flex flex-col transition-transform transform hover:scale-105"
+            >
+              <div className="w-full h-48 overflow-hidden">
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <button
-                className={`text-white px-3 py-1 rounded ${product.quantity > 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'}`}
-                onClick={() => addToOrder(product)}
-                disabled={product.quantity === 0}
-              >
-                {product.quantity > 0 ? '+ Add' : 'Unavailable'}
-              </button>
+              <div className="flex flex-col p-6">
+                <div className="font-semibold text-xl text-gray-800">{product.name}</div>
+                <p className="text-gray-600 text-sm">{product.description}</p>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="font-bold text-[#f15734] text-2xl">₱{product.price}</div>
+                  <div className={`text-sm ${product.quantity > 0 ? 'text-[#f15734]' : 'text-gray-400'} font-semibold`}>
+                    {product.quantity > 0 ? `${product.quantity} available` : 'Out of Stock'}
+                  </div>
+                </div>
+                <button
+                  className={`w-full py-2 rounded-lg font-semibold transition duration-300 ${
+                    product.quantity > 0
+                      ? 'bg-white border border-[#f15734] text-[#f15734] hover:bg-[#f15734] hover:text-white'
+                      : 'bg-white text-gray-400 border border-gray-400 cursor-not-allowed'
+                  }`}
+                  onClick={() => addToOrder(product)}
+                  disabled={product.quantity === 0}
+                >
+                  {product.quantity > 0 ? 'Add to cart' : 'Unavailable'}
+                </button>
+              </div>
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="w-full sm:w-1/3 md:w-1/4 bg-white rounded shadow p-4 overflow-auto">
-          <h2 className="text-lg font-bold mb-2">Order Summary</h2>
-          {orderItems.length === 0 ? (
-            <div className="text-gray-500">No items in order.</div>
-          ) : (
-            <table className="w-full mb-2">
-              <thead>
-                <tr>
-                  <th className="text-left">Product</th>
-                  <th>Qty</th>
-                  <th>Price</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderItems.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.productName}</td>
-                    <td>
-                      <button onClick={() => changeQuantity(item.id, -1)} className="px-2">-</button>
-                      {item.quantity}
-                      <button onClick={() => changeQuantity(item.id, 1)} className="px-2">+</button>
-                    </td>
-                    <td>₱{item.price * item.quantity}</td>
-                    <td>
-                      <button onClick={() => removeFromOrder(item.id)} className="text-red-500">x</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        <div className="mb-2">Total: <span className="font-bold">₱{total.toFixed(2)}</span></div>
-        <div className="mb-2 flex gap-2">
-          <label>Order Type:
-            <select
-              className="ml-2 border rounded px-2 py-1"
-              value={orderType}
-              onChange={(e) => setOrderType(e.target.value)}
-            >
-              {orderTypes.map((type) => (
-                <option key={type.value} value={type.value}>{type.label}</option>
-              ))}
-            </select>
-          </label>
-          <label>Payment:
-            <select
-              className="ml-2 border rounded px-2 py-1"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-            >
-              {paymentMethods.map((pm) => (
-                <option key={pm.value} value={pm.value}>{pm.label}</option>
-              ))}
-            </select>
-          </label>
-          <label>Status:
-            <select
-              className="ml-2 border rounded px-2 py-1"
-              value={orderStatus}
-              onChange={(e) => setOrderStatus(e.target.value)}
-            >
-              {orderStatusOptions.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="mt-4">
-          <label htmlFor="amountPaid" className="block text-sm font-medium text-gray-700">Amount Paid:</label>
-          <input 
-            type="number" 
-            id="amountPaid" 
-            value={amountPaid}
-            onChange={(e) => setAmountPaid(e.target.value)}
-            placeholder="Enter amount customer paid"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
+      {/* RIGHT: Order Summary (fixed width) */}
+      <div className="w-full md:w-[290px]">
+        <OrderSummary
+          orderItems={orderItems}
+          orderType={orderType}
+          paymentMethod={paymentMethod}
+          amountPaid={amountPaid}
+          total={total}
+          orderTypes={orderTypes}
+          paymentMethods={paymentMethods}
+          setOrderType={setOrderType}
+          setPaymentMethod={setPaymentMethod}
+          setAmountPaid={setAmountPaid}
+          changeQuantity={changeQuantity}
+          removeFromOrder={removeFromOrder}
+          handleCheckout={handleCheckout}
+        />
+      </div>
+    </div>
 
-        {changeGiven !== null && (
-          <div className="mt-2 text-lg font-semibold text-green-600">
-            Change Due: ${changeGiven.toFixed(2)}
-          </div>
-        )}
+    {/* Bottom Section: Order History */}
+    <div className="mt-8">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-lg font-bold">Order History</h2>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded mt-2 w-full disabled:opacity-50"
-          onClick={handleCheckout}
-          disabled={orderItems.length === 0 || loading || !amountPaid || parseFloat(amountPaid) < total}
-        >
-          {loading ? 'Placing Order...' : 'Checkout'}
-        </button>
-
-        {lastCompletedOrder && (
-          <button 
-            onClick={() => window.open(`/receipt/${lastCompletedOrder.id}`, '_self')} 
-            className="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-          >
-            Print Receipt for Last Order
-          </button>
-        )}
-      </div> {/* End of Order Summary */}
-      </div> {/* End of flex gap-4 mb-8 */}
-      {/* Order History Section */}
-      <div className="mt-8 flex items-center justify-between">
-        <h2 className="text-lg font-bold mb-2">Order History</h2>
-        <button
-          style={{ background: 'none', border: 'none', padding: 0, marginLeft: '1rem', cursor: 'pointer', color: 'black', fontSize: '2rem', fontWeight: 'bold', lineHeight: 1 }}
           title="Delete Order History"
           onClick={async () => {
             if (window.confirm('Are you sure you want to delete all order history? This action cannot be undone.')) {
@@ -391,31 +325,30 @@ const Orders: React.FC = () => {
             }
           }}
           disabled={loading || orderHistory.length === 0}
+          className="text-red-600 text-xl font-bold hover:text-red-800"
         >
-          x
+          ×
         </button>
       </div>
+
       {orderHistory.length === 0 ? (
         <div className="text-gray-500">No orders yet.</div>
       ) : (
-        <table className="w-full text-sm bg-white rounded shadow">
+        <table className="w-full text-sm bg-white rounded shadow overflow-x-auto">
           <thead>
             <tr>
               <th>Order ID</th>
-              <th>Status</th>
               <th>Type</th>
               <th>Payment</th>
               <th>Items</th>
               <th>Total</th>
               <th>Created</th>
-              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {orderHistory.map((order) => (
-              <tr key={order.orderId} className={order.status === 'Pending' ? 'bg-yellow-50' : ''}>
+              <tr key={order.orderId}>
                 <td>{order.orderId.slice(0, 8)}</td>
-                <td>{order.status}</td>
                 <td>{order.orderType}</td>
                 <td>{order.paymentMethod}</td>
                 <td>
@@ -425,30 +358,20 @@ const Orders: React.FC = () => {
                 </td>
                 <td>₱{order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)}</td>
                 <td>{new Date(order.createdAt).toLocaleString()}</td>
-                <td>
-                  {order.status === 'Pending' && (
-                    <button
-                      className="bg-green-500 text-white px-2 py-1 rounded"
-                      onClick={() => updateOrderStatusHandler(order.orderId, 'Completed')}
-                      disabled={loading}
-                    >
-                      Mark Completed
-                    </button>
-                  )}
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
+
       <div className="flex justify-end mt-4">
         <button
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
           onClick={async () => {
-            setLoading(true);
-            setError('');
-            setSuccess('');
             try {
+              setLoading(true);
+              setError('');
+              setSuccess('');
               await API.delete('/inventory/orders');
               setOrderHistory([]);
               setSuccess('All order history deleted successfully.');
@@ -464,7 +387,8 @@ const Orders: React.FC = () => {
         </button>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Orders;

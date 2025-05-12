@@ -1,5 +1,5 @@
-import API from './axios';
 import { OrderHistoryItem, OrderItem } from '../types/order';
+import API from './axios';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -30,12 +30,9 @@ export const createOrder = async (
   orderData: CreateOrderPayload
 ): Promise<ApiResponse<OrderCreationResponse>> => {
   try {
-    // The backend is expected to return an object matching ApiResponse<OrderCreationResponse>
-    // e.g., { success: true, message: "Order created", data: { orderId: "123", changeGiven: 5.50 } }
     const response = await API.post<ApiResponse<OrderCreationResponse>>('/inventory/orders', orderData);
-    return response.data; // Axios nests the actual server response in `response.data`
-  } catch (error: unknown) { // Typed as unknown
-    // Handle and re-throw or format error to match ApiResponse structure
+    return response.data;
+  } catch (error: unknown) {
     let message = 'An unexpected error occurred during order creation.';
     let errorData: unknown = error;
 
