@@ -130,7 +130,9 @@ Base path: `/api/user`
   }
   ```
 
-#### PUT `/api/user/update/:id`
+#### PUT `/api/user/update/:id` `DEPRECATED`
+
+#### PUT `/api/user/v2/:id` `NEW ENDPOINT`
 
 - **Description:** Update a user by ID (admin only).
 - **Headers:** `Authorization: Bearer <token>`
@@ -158,7 +160,9 @@ Base path: `/api/user`
   }
   ```
 
-#### DELETE `/api/user/delete/:id`
+#### DELETE `/api/user/delete/:id` `DEPRECATED`
+
+#### DELETE `/api/user/v2/:id` `NEW ENDPOINT`
 
 - **Description:** Delete a user by ID (admin only).
 - **Headers:** `Authorization: Bearer <token>`
