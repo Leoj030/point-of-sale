@@ -53,7 +53,6 @@ export const generateReceipt = async (req: AuthenticatedRequest, res: Response):
             paymentMethod: order.paymentMethod,
             servedBy: req.user.username, // Assuming username is available on req.user
             orderType: order.orderType,
-            status: order.status, // Include current status for frontend to check
         };
 
         res.status(200).json(successResponse('Receipt data generated', receiptData));

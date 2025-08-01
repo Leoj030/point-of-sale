@@ -4,7 +4,7 @@ import {
     getOrders,
     getOrderById,
     deleteOrder,
-    deleteAllOrders // <-- import the new controller
+    deleteAllOrders
 } from '../controllers/inventory/order.controller.js';
 import { createOrderValidator } from '../validators/order.validator.js';
 import { checkRole, isAuthenticated } from '../middleware/auth.middleware.js';

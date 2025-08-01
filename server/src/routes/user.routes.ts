@@ -7,7 +7,7 @@ import roles from '../enums/roles.js';
 import update from '../controllers/user/update.js';
 import deleteUser from '../controllers/user/delete.js';
 import getUsers from '../controllers/user/fetchUser.js';
-import { createDeprecationMiddleware } from 'src/middleware/deprecation.middleware.js';
+import { createDeprecationMiddleware } from '../middleware/deprecation.middleware.js';
 
 const userRouter = express.Router();
 
