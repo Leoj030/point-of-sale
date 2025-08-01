@@ -11,6 +11,7 @@ import seedStatus from './config/seedStatus.js';
 import userRoutes from './routes/user.routes.js';
 import salesReportRoutes from './routes/salesReport.routes.js';
 import ordersRoutes from './routes/orders.routes.js';
+import seedUsers from './config/seedUsers.js';
 
 const app = express();
 
@@ -18,6 +19,7 @@ const app = express();
     await connectDB();
     await seedRoles();
     await seedStatus();
+    await seedUsers();
 })();
 
 app.use(express.json());
