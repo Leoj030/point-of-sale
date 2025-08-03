@@ -12,6 +12,8 @@ import userRoutes from './routes/user.routes';
 import salesReportRoutes from './routes/salesReport.routes';
 import ordersRoutes from './routes/orders.routes';
 import seedUsers from './config/seedUsers';
+import helmet from 'helmet';
+import limiter from './config/limiterConfig'
 
 const app = express();
 
@@ -22,6 +24,10 @@ const app = express();
     await seedUsers();
 })();
 
+
+
+app.use(limiter);
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
