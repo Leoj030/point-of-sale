@@ -1,4 +1,4 @@
-import { ApiResponse } from "../interfaces/api.response.js";
+import { ApiResponse } from "../interfaces/api.response";
 
 export const successResponse = <T>(message: string, data?: T): ApiResponse<T> => {
     return {

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import userModel from '../../models/user.model.js';
-import { successResponse, errorResponse } from '../../utils/apiResponse.js';
-import Roles from '../../models/roles.model.js';
-import StatusModel from '../../models/status.model.js';
-import statusEnum from '../../enums/status.js';
+import userModel from '../../models/user.model';
+import { successResponse, errorResponse } from '../../utils/apiResponse';
+import Roles from '../../models/roles.model';
+import StatusModel from '../../models/status.model';
+import statusEnum from '../../enums/status';
 
 const updateUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
@@ -38,6 +38,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
                 return;
             }
             updateData.status = statusDoc._id;
+            delete updateData.isActive;
         }
 
         const updatedUser = await userModel.findByIdAndUpdate(

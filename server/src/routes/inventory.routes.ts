@@ -1,10 +1,10 @@
 import express from 'express';
-import * as categoryController from '../controllers/inventory/category.controller.js';
-import * as productController from '../controllers/inventory/product.controller.js';
-import { checkRole, isAuthenticated } from '../middleware/auth.middleware.js';
-import { handleValidationErrors } from '../middleware/validation.middleware.js';
-import * as inventoryValidator from '../validators/inventory.validator.js';
-import roles from '../enums/roles.js';
+import * as categoryController from '../controllers/inventory/category.controller';
+import * as productController from '../controllers/inventory/product.controller';
+import { checkRole, isAuthenticated } from '../middleware/auth.middleware';
+import { handleValidationErrors } from '../middleware/validation.middleware';
+import * as inventoryValidator from '../validators/inventory.validator';
+import roles from '../enums/roles';
 
 const router = express.Router();
 

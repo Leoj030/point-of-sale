@@ -1,5 +1,5 @@
 import { body } from 'express-validator';
-import { OrderType, PaymentMethod } from '../enums/status.js';
+import { OrderType, PaymentMethod } from '../enums/status';
 
 export const createOrderValidator = [
     body('items')

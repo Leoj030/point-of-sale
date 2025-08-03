@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import Product from '../../models/product.model.js';
-import { IProduct } from '../../interfaces/product.js';
-import { successResponse, errorResponse } from '../../utils/apiResponse.js';
+import Product from '../../models/product.model';
+import { IProduct } from '../../interfaces/product';
+import { successResponse, errorResponse } from '../../utils/apiResponse';
 
 export const getProducts = async (req: Request, res: Response): Promise<void> => {
     try {

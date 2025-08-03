@@ -1,6 +1,6 @@
 import { body, param } from 'express-validator';
 import mongoose from 'mongoose';
-import Category from '../models/category.model.js';
+import Category from '../models/category.model';
 
 // --- Category Validations --- \\
 export const validateCreateCategory = [

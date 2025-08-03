@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { IUser } from '../../interfaces/user.js';
-import User from '../../models/user.model.js';
-import { successResponse, errorResponse } from '../../utils/apiResponse.js';
+import { IUser } from '../../interfaces/user';
+import User from '../../models/user.model';
+import { successResponse, errorResponse } from '../../utils/apiResponse';
 
 const getUsers = async (req: Request, res: Response): Promise<void> => {
     try {

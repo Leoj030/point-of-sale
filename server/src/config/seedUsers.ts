@@ -1,11 +1,11 @@
-import userModel from "../models/user.model.js";
+import userModel from "../models/user.model";
 import bcrypt from 'bcryptjs';
 
-const hashedPassword = await bcrypt.hash("admin", 12);
 
 const seedUsers = async (): Promise<void> => {
     try {
         const existingUsers = await userModel.find();
+        const hashedPassword = await bcrypt.hash("admin", 12);
 
         if (existingUsers.length === 0) {
             const defaultUsers = [

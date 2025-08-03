@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { generateReceipt } from '../controllers/receipt.controller.js';
-import { isAuthenticated } from '../middleware/auth.middleware.js';
+import { generateReceipt } from '../controllers/receipt.controller';
+import { isAuthenticated } from '../middleware/auth.middleware';
 
 const router = Router();
 

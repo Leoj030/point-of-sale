@@ -1,7 +1,7 @@
 import { body, param } from 'express-validator';
 import mongoose from 'mongoose';
-import User from '../models/user.model.js';
-import Roles from '../models/roles.model.js';
+import User from '../models/user.model';
+import Roles from '../models/roles.model';
 
 // -- User Validations -- \\
 export const validateCreateUser = [

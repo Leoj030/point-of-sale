@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import status from '../enums/status.js';
+import status from '../enums/status';
 
 const userSchema = new mongoose.Schema({
     name: { type: String, rquired: true },

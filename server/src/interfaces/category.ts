@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import { IProduct } from '../interfaces/product.js'; // <-- Import your Product interface
+import { IProduct } from '../interfaces/product'; // <-- Import your Product interface
 
 export interface ICategory extends Document {
     _id: Types.ObjectId;

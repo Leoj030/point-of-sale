@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import status from '../enums/status.js';
+import status from '../enums/status';
 
 const statusSchema = new mongoose.Schema({
     name: {

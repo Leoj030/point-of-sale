@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import Category from '../../models/category.model.js';
-import Product from '../../models/product.model.js';
-import { successResponse, errorResponse } from '../../utils/apiResponse.js';
+import Category from '../../models/category.model';
+import Product from '../../models/product.model';
+import { successResponse, errorResponse } from '../../utils/apiResponse';
 
 export const getCategories = async (req: Request, res: Response): Promise<void> => {
     try {

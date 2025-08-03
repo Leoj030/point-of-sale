@@ -1,12 +1,12 @@
 import { Response } from 'express';
-import Order from '../../models/order.model.js';
-import Product from '../../models/product.model.js';
+import Order from '../../models/order.model';
+import Product from '../../models/product.model';
 import { v4 as uuidv4 } from 'uuid';
-import { successResponse, errorResponse } from '../../utils/apiResponse.js';
+import { successResponse, errorResponse } from '../../utils/apiResponse';
 import { validationResult } from 'express-validator';
 
-import { AuthenticatedRequest } from '../../interfaces/authMiddleware.js';
-import { OrderItemSnapshot } from '../../interfaces/order.js';
+import { AuthenticatedRequest } from '../../interfaces/authMiddleware';
+import { OrderItemSnapshot } from '../../interfaces/order';
 
 // Define interface for incoming request items
 interface RequestItem {

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { OrderType, PaymentMethod } from '../enums/status.js';
-import { OrderItemSnapshot } from '../interfaces/order.js';
+import { OrderType, PaymentMethod } from '../enums/status';
+import { OrderItemSnapshot } from '../interfaces/order';
 
 export interface IOrder extends Document {
     orderId: string;

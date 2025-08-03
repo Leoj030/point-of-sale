@@ -5,10 +5,10 @@ import {
     getOrderById,
     deleteOrder,
     deleteAllOrders
-} from '../controllers/inventory/order.controller.js';
-import { createOrderValidator } from '../validators/order.validator.js';
-import { checkRole, isAuthenticated } from '../middleware/auth.middleware.js';
-import roles from '../enums/roles.js';
+} from '../controllers/inventory/order.controller';
+import { createOrderValidator } from '../validators/order.validator';
+import { checkRole, isAuthenticated } from '../middleware/auth.middleware';
+import roles from '../enums/roles';
 
 const router = Router();
 

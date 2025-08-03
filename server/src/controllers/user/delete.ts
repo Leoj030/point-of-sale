@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import userModel from '../../models/user.model.js';
-import { successResponse, errorResponse } from '../../utils/apiResponse.js';
+import userModel from '../../models/user.model';
+import { successResponse, errorResponse } from '../../utils/apiResponse';
 
 const deleteUser = async (req: Request, res: Response): Promise<void> => {
     try {

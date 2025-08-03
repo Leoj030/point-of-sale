@@ -1,5 +1,5 @@
-import userRolesModel from '../models/roles.model.js';
-import roles from '../enums/roles.js';
+import userRolesModel from '../models/roles.model';
+import roles from '../enums/roles';
 
 const seedRoles = async (): Promise<void> => {
     try {

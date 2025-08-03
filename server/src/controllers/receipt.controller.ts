@@ -1,12 +1,12 @@
 import { Response } from 'express';
-import Order from '../models/order.model.js';
-import { AuthenticatedRequest } from '../interfaces/authMiddleware.js';
-import { successResponse, errorResponse } from '../utils/apiResponse.js';
+import Order from '../models/order.model';
+import { AuthenticatedRequest } from '../interfaces/authMiddleware';
+import { successResponse, errorResponse } from '../utils/apiResponse';
 
-// Placeholder for store details - In a real app, this would come from config/DB
+// Placeholder for store details
 const STORE_DETAILS = {
-    name: "Cascade Store POS",
-    address: "123 AI Flow St, Silicon Valley, CA",
+    name: "Store POS",
+    address: "123 ST, City, Country",
     contact: "(555) 123-4567",
     tin: "000-000-000-000 VAT REG"
 };
@@ -20,7 +20,7 @@ export const generateReceipt = async (req: AuthenticatedRequest, res: Response):
             return;
         }
 
-        const order = await Order.findOne({ orderId }).lean(); // .lean() for plain JS object
+        const order = await Order.findOne({ orderId }).lean();
 
         if (!order) {
             res.status(404).json(errorResponse('Order not found'));
@@ -38,20 +38,20 @@ export const generateReceipt = async (req: AuthenticatedRequest, res: Response):
         const receiptData = {
             storeDetails: STORE_DETAILS,
             orderId: order.orderId,
-            createdAt: order.createdAt, // Align field name with frontend expectation
+            createdAt: order.createdAt,
             items: order.items.map(item => ({
-                productId: item.id, // Assuming item.id is the productId, add if needed by frontend key prop
+                productId: item.id,
                 name: item.productName,
                 quantity: item.quantity,
-                price: item.price, // Price at time of purchase
+                price: item.price,
                 total: item.price * item.quantity,
             })),
-            subTotal: order.totalAmount, // Assuming totalAmount is pre-calculated sum of (item.price * item.quantity)
+            subTotal: order.totalAmount,
             totalAmount: order.totalAmount,
             amountPaid: order.amountPaid,
             changeGiven: order.changeGiven,
             paymentMethod: order.paymentMethod,
-            servedBy: req.user.username, // Assuming username is available on req.user
+            servedBy: req.user.username,
             orderType: order.orderType,
         };
 
